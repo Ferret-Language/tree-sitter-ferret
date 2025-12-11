@@ -3,6 +3,8 @@ module.exports = grammar({
 
   extras: ($) => [/\s/, $.line_comment, $.block_comment],
 
+  conflicts: ($) => [[$.block, $.composite_literal]],
+
   rules: {
     source_file: ($) => repeat($._statement),
 
@@ -191,6 +193,7 @@ module.exports = grammar({
         $.anonymous_struct_literal,
         $.anonymous_enum_literal,
         $.range_expression,
+        $.match_expression,
       ),
 
     parenthesized_expression: ($) => seq("(", $._expression, ")"),
@@ -289,6 +292,26 @@ module.exports = grammar({
     // Range expression
     range_expression: ($) =>
       prec.left(2, seq($._expression, "..", $._expression)),
+
+    match_expression: ($) =>
+      seq(
+        "match",
+        field("value", $._expression),
+        "{",
+        optional(
+          seq($.match_arm, repeat(seq(",", $.match_arm)), optional(",")),
+        ),
+        "}",
+      ),
+
+    match_arm: ($) =>
+      seq(
+        field("pattern", choice($.wildcard_pattern, $._expression)),
+        "=>",
+        field("body", choice($.block, $._expression)),
+      ),
+
+    wildcard_pattern: ($) => "_",
 
     // Scoped identifier (for module access and enum variants)
     scoped_identifier: ($) =>
