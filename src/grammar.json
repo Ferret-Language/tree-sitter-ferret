@@ -2254,7 +2254,7 @@
     },
     "none_literal": {
       "type": "STRING",
-      "value": "None"
+      "value": "none"
     },
     "identifier": {
       "type": "PATTERN",

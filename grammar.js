@@ -472,7 +472,7 @@ module.exports = grammar({
 
     boolean_literal: ($) => choice("true", "false"),
 
-    none_literal: ($) => "None",
+    none_literal: ($) => "none",
 
     // Identifiers
     identifier: ($) => /[a-z_][a-zA-Z0-9_]*/,
