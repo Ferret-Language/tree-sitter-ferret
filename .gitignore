@@ -48,3 +48,10 @@ zig-out/
 *.tar.gz
 *.tgz
 *.zip
+
+.editorconfig
+
+makefile
+
+src
+bindings
