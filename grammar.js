@@ -3,20 +3,36 @@ module.exports = grammar({
 
   extras: ($) => [/\s/, $.line_comment, $.block_comment],
 
+  conflicts: ($) => [[$.optional_type, $.reference_type]],
+
   rules: {
     source_file: ($) => repeat($._statement),
 
     _statement: ($) =>
       choice(
+        $.import_declaration,
         $.variable_declaration,
+        $.constant_declaration,
         $.function_declaration,
         $.type_declaration,
+        $.enum_declaration,
         $.return_statement,
         $.if_statement,
         $.while_statement,
+        $.for_statement,
         $.expression_statement,
       ),
 
+    // Import declarations
+    import_declaration: ($) =>
+      seq(
+        "import",
+        field("path", $.string_literal),
+        optional(seq("as", field("alias", $.identifier))),
+        ";",
+      ),
+
+    // Variable declarations
     variable_declaration: ($) =>
       seq(
         "let",
@@ -29,6 +45,18 @@ module.exports = grammar({
         ";",
       ),
 
+    // Constant declarations
+    constant_declaration: ($) =>
+      seq(
+        "const",
+        field("name", $.identifier),
+        optional(seq(":", field("type", $.type))),
+        ":=",
+        field("value", $._expression),
+        ";",
+      ),
+
+    // Type declarations (structs)
     type_declaration: ($) =>
       seq(
         "type",
@@ -49,6 +77,28 @@ module.exports = grammar({
         ",",
       ),
 
+    // Enum declarations
+    enum_declaration: ($) =>
+      seq(
+        "type",
+        field("name", $.type_identifier),
+        "enum",
+        field("body", $.enum_body),
+        ";",
+      ),
+
+    enum_body: ($) =>
+      seq(
+        "{",
+        optional(
+          seq($.enum_variant, repeat(seq(",", $.enum_variant)), optional(",")),
+        ),
+        "}",
+      ),
+
+    enum_variant: ($) => $.type_identifier,
+
+    // Function declarations
     function_declaration: ($) =>
       seq(
         "fn",
@@ -86,66 +136,97 @@ module.exports = grammar({
 
     block: ($) => seq("{", repeat($._statement), "}"),
 
+    // Control flow statements
     if_statement: ($) =>
       seq(
         "if",
         field("condition", $._expression),
         field("consequence", $.block),
-        optional(seq("else", field("alternative", $.block))),
+        optional(
+          seq("else", field("alternative", choice($.block, $.if_statement))),
+        ),
       ),
 
     while_statement: ($) =>
       seq("while", field("condition", $._expression), field("body", $.block)),
+
+    for_statement: ($) =>
+      seq(
+        "for",
+        "let",
+        field("variable", $.identifier),
+        "in",
+        field("range", $.range_expression),
+        field("body", $.block),
+      ),
 
     return_statement: ($) =>
       seq("return", optional($._expression), optional("!"), ";"),
 
     expression_statement: ($) => seq($._expression, ";"),
 
+    // Expressions
     _expression: ($) =>
       choice(
         $.identifier,
+        $.scoped_identifier,
         $.integer_literal,
         $.float_literal,
         $.string_literal,
-        $.char_literal,
+        $.byte_literal,
         $.boolean_literal,
+        $.none_literal,
         $.binary_expression,
         $.unary_expression,
         $.call_expression,
         $.field_expression,
+        $.index_expression,
         $.catch_expression,
         $.parenthesized_expression,
         $.composite_literal,
+        $.array_literal,
+        $.anonymous_struct_literal,
+        $.anonymous_enum_literal,
+        $.range_expression,
       ),
 
     parenthesized_expression: ($) => seq("(", $._expression, ")"),
 
+    // Binary expressions
     binary_expression: ($) =>
       choice(
+        // Logical
         prec.left(1, seq($._expression, "||", $._expression)),
         prec.left(2, seq($._expression, "&&", $._expression)),
+        // Comparison
         prec.left(3, seq($._expression, choice("==", "!="), $._expression)),
         prec.left(
           4,
           seq($._expression, choice("<", ">", "<=", ">="), $._expression),
         ),
+        // Arithmetic
         prec.left(5, seq($._expression, choice("+", "-"), $._expression)),
         prec.left(6, seq($._expression, choice("*", "/", "%"), $._expression)),
+        // Power operator
+        prec.right(7, seq($._expression, "**", $._expression)),
+        // Coalescing operator
+        prec.left(8, seq($._expression, "??", $._expression)),
       ),
 
+    // Unary expressions
     unary_expression: ($) =>
       choice(
-        prec.right(7, seq("!", $._expression)),
-        prec.right(7, seq("-", $._expression)),
-        prec.right(7, seq("&", $._expression)),
+        prec.right(9, seq("!", $._expression)),
+        prec.right(9, seq("-", $._expression)),
+        prec.right(9, seq("&", $._expression)),
       ),
 
+    // Call expression
     call_expression: ($) =>
       prec(
-        8,
+        10,
         seq(
-          field("function", $.identifier),
+          field("function", $._expression),
           field("arguments", $.argument_list),
         ),
       ),
@@ -159,9 +240,10 @@ module.exports = grammar({
         ")",
       ),
 
+    // Field access
     field_expression: ($) =>
       prec(
-        9,
+        11,
         seq(
           field("value", $._expression),
           ".",
@@ -169,17 +251,51 @@ module.exports = grammar({
         ),
       ),
 
-    catch_expression: ($) =>
-      seq(
-        field("expression", $._expression),
-        "catch",
-        field("error_name", $.identifier),
-        field("error_handler", $.block),
-        optional("fallback"),
+    // Array indexing
+    index_expression: ($) =>
+      prec(
+        11,
+        seq(
+          field("array", $._expression),
+          "[",
+          field("index", $._expression),
+          "]",
+        ),
       ),
 
-    // Composite literal can be either map or struct
-    // Determined by first element: .field = value (struct) or key => value (map)
+    // Catch expression
+    catch_expression: ($) =>
+      prec.left(
+        1,
+        seq(
+          field("expression", $._expression),
+          "catch",
+          choice(
+            // With error handler block
+            seq(
+              field("error_name", $.identifier),
+              field("error_handler", $.block),
+              field("fallback", $._expression),
+            ),
+            // Shorthand without handler
+            field("fallback", $._expression),
+          ),
+        ),
+      ),
+
+    // Range expression
+    range_expression: ($) =>
+      prec.left(2, seq($._expression, "..", $._expression)),
+
+    // Scoped identifier (for module access and enum variants)
+    scoped_identifier: ($) =>
+      seq(
+        field("scope", choice($.identifier, $.type_identifier)),
+        "::",
+        field("name", choice($.identifier, $.type_identifier)),
+      ),
+
+    // Composite literal (map and struct)
     composite_literal: ($) =>
       choice(
         // Empty literal {}
@@ -199,7 +315,7 @@ module.exports = grammar({
           repeat(seq(",", $.struct_field_init)),
           optional(","),
           "}",
-          optional(seq("as", $.type_identifier)),
+          optional(seq("as", $.type)),
         ),
       ),
 
@@ -214,17 +330,84 @@ module.exports = grammar({
         field("value", $._expression),
       ),
 
+    // Array literal
+    array_literal: ($) =>
+      seq(
+        "[",
+        optional(
+          seq($._expression, repeat(seq(",", $._expression)), optional(",")),
+        ),
+        "]",
+      ),
+
+    // Anonymous struct literal
+    anonymous_struct_literal: ($) =>
+      seq("struct", "{", repeat($.field_declaration), "}"),
+
+    // Anonymous enum literal
+    anonymous_enum_literal: ($) =>
+      seq(
+        "enum",
+        "{",
+        optional(
+          seq(
+            $.type_identifier,
+            repeat(seq(",", $.type_identifier)),
+            optional(","),
+          ),
+        ),
+        "}",
+      ),
+
+    // Types
     type: ($) =>
       choice(
+        $.result_type,
         $.primitive_type,
-        $.map_type,
-        $.reference_type,
-        $.optional_type,
         $.type_identifier,
+        $.array_type,
+        $.dynamic_array_type,
+        $.map_type,
+        $.optional_type,
+        $.reference_type,
       ),
 
     primitive_type: ($) =>
-      choice("str", "byte", "bool", "i32", "i64", "f32", "f64"),
+      choice(
+        // Signed integers (8-256 bits)
+        "i8",
+        "i16",
+        "i32",
+        "i64",
+        "i128",
+        "i256",
+        // Unsigned integers (8-256 bits)
+        "u8",
+        "u16",
+        "u32",
+        "u64",
+        "u128",
+        "u256",
+        // Floats (32-256 bits)
+        "f32",
+        "f64",
+        "f128",
+        "f256",
+        // Other primitives
+        "str",
+        "bool",
+        "byte",
+      ),
+
+    array_type: ($) =>
+      seq(
+        "[",
+        field("size", $.integer_literal),
+        "]",
+        field("element_type", $.type),
+      ),
+
+    dynamic_array_type: ($) => seq("[", "]", field("element_type", $.type)),
 
     map_type: ($) =>
       seq(
@@ -238,7 +421,16 @@ module.exports = grammar({
     optional_type: ($) =>
       prec(
         1,
-        seq(choice($.type_identifier, $.primitive_type, $.map_type), "?"),
+        seq(
+          choice(
+            $.type_identifier,
+            $.primitive_type,
+            $.array_type,
+            $.dynamic_array_type,
+            $.map_type,
+          ),
+          "?",
+        ),
       ),
 
     reference_type: ($) =>
@@ -249,10 +441,18 @@ module.exports = grammar({
           choice(
             $.type_identifier,
             $.primitive_type,
+            $.array_type,
+            $.dynamic_array_type,
             $.map_type,
             $.optional_type,
           ),
         ),
+      ),
+
+    result_type: ($) =>
+      prec(
+        3,
+        seq(field("error_type", $.type), "!", field("success_type", $.type)),
       ),
 
     // Literals
@@ -263,7 +463,7 @@ module.exports = grammar({
     string_literal: ($) =>
       seq('"', repeat(choice($.escape_sequence, /[^"\\]/)), '"'),
 
-    char_literal: ($) => seq("'", choice($.escape_sequence, /[^'\\]/), "'"),
+    byte_literal: ($) => seq("'", choice($.escape_sequence, /[^'\\]/), "'"),
 
     escape_sequence: ($) =>
       token(
@@ -271,6 +471,8 @@ module.exports = grammar({
       ),
 
     boolean_literal: ($) => choice("true", "false"),
+
+    none_literal: ($) => "None",
 
     // Identifiers
     identifier: ($) => /[a-z_][a-zA-Z0-9_]*/,
