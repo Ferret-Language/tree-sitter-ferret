@@ -224,6 +224,7 @@ module.exports = grammar({
       choice(
         prec.right(9, seq("!", $._expression)),
         prec.right(9, seq("-", $._expression)),
+        prec.right(9, seq("&'", $._expression)),
         prec.right(9, seq("&", $._expression)),
       ),
 
@@ -469,7 +470,7 @@ module.exports = grammar({
       prec(
         2,
         seq(
-          "&",
+          choice("&'", "&"),
           choice(
             $.type_identifier,
             $.primitive_type,
