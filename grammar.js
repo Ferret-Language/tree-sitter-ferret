@@ -21,6 +21,7 @@ module.exports = grammar({
         $.if_statement,
         $.while_statement,
         $.for_statement,
+        $.try_statement,
         $.expression_statement,
       ),
 
@@ -124,7 +125,7 @@ module.exports = grammar({
         "(",
         field("name", $.identifier),
         ":",
-        optional("&"),
+        optional(choice("&mut", "&'", "&")),
         field("type", $.type),
         optional("?"),
         ")",
@@ -176,6 +177,9 @@ module.exports = grammar({
     break_statement: ($) => seq("break", ";"),
 
     continue_statement: ($) => seq("continue", ";"),
+
+    try_statement: ($) =>
+      seq("try", field("expression", $._expression), ";"),
 
     expression_statement: ($) => seq($._expression, ";"),
 
@@ -236,6 +240,7 @@ module.exports = grammar({
       choice(
         prec.right(9, seq("!", $._expression)),
         prec.right(9, seq("-", $._expression)),
+        prec.right(9, seq("&mut", $._expression)),
         prec.right(9, seq("&'", $._expression)),
         prec.right(9, seq("&", $._expression)),
       ),
@@ -484,7 +489,7 @@ module.exports = grammar({
       prec(
         2,
         seq(
-          choice("&'", "&"),
+          choice("&mut", "&'", "&"),
           choice(
             $.type_identifier,
             $.primitive_type,

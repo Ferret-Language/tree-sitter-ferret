@@ -58,6 +58,10 @@
         },
         {
           "type": "SYMBOL",
+          "name": "try_statement"
+        },
+        {
+          "type": "SYMBOL",
           "name": "expression_statement"
         }
       ]
@@ -684,8 +688,21 @@
           "type": "CHOICE",
           "members": [
             {
-              "type": "STRING",
-              "value": "&"
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "&mut"
+                },
+                {
+                  "type": "STRING",
+                  "value": "&'"
+                },
+                {
+                  "type": "STRING",
+                  "value": "&"
+                }
+              ]
             },
             {
               "type": "BLANK"
@@ -1028,6 +1045,27 @@
         {
           "type": "STRING",
           "value": "continue"
+        },
+        {
+          "type": "STRING",
+          "value": ";"
+        }
+      ]
+    },
+    "try_statement": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "try"
+        },
+        {
+          "type": "FIELD",
+          "name": "expression",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_expression"
+          }
         },
         {
           "type": "STRING",
@@ -1429,6 +1467,23 @@
               {
                 "type": "STRING",
                 "value": "-"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "_expression"
+              }
+            ]
+          }
+        },
+        {
+          "type": "PREC_RIGHT",
+          "value": 9,
+          "content": {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "STRING",
+                "value": "&mut"
               },
               {
                 "type": "SYMBOL",
@@ -2469,6 +2524,10 @@
           {
             "type": "CHOICE",
             "members": [
+              {
+                "type": "STRING",
+                "value": "&mut"
+              },
               {
                 "type": "STRING",
                 "value": "&'"
