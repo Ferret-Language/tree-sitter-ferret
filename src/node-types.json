@@ -2351,6 +2351,16 @@
     "type": "method_receiver",
     "named": true,
     "fields": {
+      "mutability": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "mut",
+            "named": false
+          }
+        ]
+      },
       "name": {
         "multiple": false,
         "required": true,
@@ -3297,7 +3307,18 @@
   {
     "type": "unary_expression",
     "named": true,
-    "fields": {},
+    "fields": {
+      "mutability": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "mut",
+            "named": false
+          }
+        ]
+      }
+    },
     "children": {
       "multiple": false,
       "required": true,
@@ -3683,10 +3704,6 @@
     "named": false
   },
   {
-    "type": "&mut",
-    "named": false
-  },
-  {
     "type": "'",
     "named": false
   },
@@ -3942,6 +3959,10 @@
   },
   {
     "type": "match",
+    "named": false
+  },
+  {
+    "type": "mut",
     "named": false
   },
   {

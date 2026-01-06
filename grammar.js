@@ -126,7 +126,7 @@ module.exports = grammar({
         field("name", $.identifier),
         ":",
         "&",
-        optional(choice("mut", "'")),
+        optional(choice(field("mutability", "mut"), "'")),
         field("type", $.type),
         optional("?"),
         ")",
@@ -241,7 +241,7 @@ module.exports = grammar({
       choice(
         prec.right(9, seq("!", $._expression)),
         prec.right(9, seq("-", $._expression)),
-        prec.right(9, seq("&", optional("mut"), $._expression)),
+        prec.right(9, seq("&", optional(field("mutability", "mut")), $._expression)),
         prec.right(9, seq("&'", $._expression)),
       ),
 

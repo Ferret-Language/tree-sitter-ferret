@@ -685,22 +685,26 @@
           "value": ":"
         },
         {
+          "type": "STRING",
+          "value": "&"
+        },
+        {
           "type": "CHOICE",
           "members": [
             {
               "type": "CHOICE",
               "members": [
                 {
-                  "type": "STRING",
-                  "value": "&mut"
+                  "type": "FIELD",
+                  "name": "mutability",
+                  "content": {
+                    "type": "STRING",
+                    "value": "mut"
+                  }
                 },
                 {
                   "type": "STRING",
-                  "value": "&'"
-                },
-                {
-                  "type": "STRING",
-                  "value": "&"
+                  "value": "'"
                 }
               ]
             },
@@ -1483,7 +1487,23 @@
             "members": [
               {
                 "type": "STRING",
-                "value": "&mut"
+                "value": "&"
+              },
+              {
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "FIELD",
+                    "name": "mutability",
+                    "content": {
+                      "type": "STRING",
+                      "value": "mut"
+                    }
+                  },
+                  {
+                    "type": "BLANK"
+                  }
+                ]
               },
               {
                 "type": "SYMBOL",
@@ -1501,23 +1521,6 @@
               {
                 "type": "STRING",
                 "value": "&'"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "_expression"
-              }
-            ]
-          }
-        },
-        {
-          "type": "PREC_RIGHT",
-          "value": 9,
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "STRING",
-                "value": "&"
               },
               {
                 "type": "SYMBOL",
@@ -2522,19 +2525,18 @@
         "type": "SEQ",
         "members": [
           {
+            "type": "STRING",
+            "value": "&"
+          },
+          {
             "type": "CHOICE",
             "members": [
               {
                 "type": "STRING",
-                "value": "&mut"
+                "value": "mut"
               },
               {
-                "type": "STRING",
-                "value": "&'"
-              },
-              {
-                "type": "STRING",
-                "value": "&"
+                "type": "BLANK"
               }
             ]
           },
