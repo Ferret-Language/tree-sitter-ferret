@@ -18,6 +18,8 @@ module.exports = grammar({
         $.return_statement,
         $.break_statement,
         $.continue_statement,
+        $.defer_statement,
+        $.fork_statement,
         $.if_statement,
         $.while_statement,
         $.for_statement,
@@ -178,6 +180,10 @@ module.exports = grammar({
     break_statement: ($) => seq("break", ";"),
 
     continue_statement: ($) => seq("continue", ";"),
+
+    defer_statement: ($) => seq("defer", $._expression, ";"),
+
+    fork_statement: ($) => seq("fork", $._expression, ";"),
 
     try_statement: ($) =>
       seq("try", field("expression", $._expression), ";"),

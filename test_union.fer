@@ -1,0 +1,10 @@
+type Printable union {
+  i32,
+  f64,
+  str,
+};
+
+type Result union {
+  i32,
+  Error,
+};

@@ -1,0 +1,3 @@
+defer io::Println("cleanup");
+defer some_function();
+defer x + y;

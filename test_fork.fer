@@ -1,0 +1,3 @@
+fork io::Println("async task");
+fork some_function();
+fork compute_value();
