@@ -2420,6 +2420,10 @@
         {
           "type": "STRING",
           "value": "byte"
+        },
+        {
+          "type": "STRING",
+          "value": "char"
         }
       ]
     },

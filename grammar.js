@@ -451,6 +451,7 @@ module.exports = grammar({
         "str",
         "bool",
         "byte",
+        "char",
       ),
 
     array_type: ($) =>
