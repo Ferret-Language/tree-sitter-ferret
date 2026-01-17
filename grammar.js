@@ -521,9 +521,15 @@ module.exports = grammar({
       ),
 
     // Literals
-    integer_literal: ($) => /\d+/,
+    integer_literal: ($) =>
+      choice(
+        /0[xX][0-9a-fA-F_]+/, // hexadecimal
+        /0[oO][0-7_]+/,       // octal
+        /0[bB][01_]+/,        // binary
+        /\d[\d_]*/            // decimal with optional underscores
+      ),
 
-    float_literal: ($) => /\d+\.\d+/,
+    float_literal: ($) => /\d[\d_]*\.\d[\d_]*([eE][+-]?\d[\d_]*)?/,
 
     string_literal: ($) =>
       seq('"', repeat(choice($.escape_sequence, /[^"\\]/)), '"'),
