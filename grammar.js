@@ -567,14 +567,14 @@ module.exports = grammar({
 
     // Literals
     integer_literal: ($) =>
-      choice(
-        /0[xX][0-9a-fA-F_]+/, // hexadecimal
-        /0[oO][0-7_]+/,       // octal
-        /0[bB][01_]+/,        // binary
-        /\d[\d_]*/            // decimal with optional underscores
-      ),
+      token(choice(
+        /0[xX][0-9a-fA-F][0-9a-fA-F_]*/, // hexadecimal (at least one digit after prefix)
+        /0[oO][0-7][0-7_]*/,              // octal (at least one digit after prefix)
+        /0[bB][01][01_]*/,                // binary (at least one digit after prefix)
+        /[0-9][0-9_]*/                    // decimal with optional underscores
+      )),
 
-    float_literal: ($) => /\d[\d_]*\.\d[\d_]*([eE][+-]?\d[\d_]*)?/,
+    float_literal: ($) => token(/[0-9][0-9_]*\.[0-9][0-9_]*([eE][+-]?[0-9][0-9_]*)?/),
 
     string_literal: ($) =>
       seq('"', repeat(choice($.escape_sequence, /[^"\\]/)), '"'),

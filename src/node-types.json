@@ -2453,11 +2453,6 @@
     }
   },
   {
-    "type": "integer_literal",
-    "named": true,
-    "fields": {}
-  },
-  {
     "type": "interface_body",
     "named": true,
     "fields": {},
@@ -4839,6 +4834,10 @@
   {
     "type": "in",
     "named": false
+  },
+  {
+    "type": "integer_literal",
+    "named": true
   },
   {
     "type": "interface",
