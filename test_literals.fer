@@ -1,0 +1,9 @@
+
+
+fn main() {
+    let charecter := 'A';
+    let bytes := b'A';
+    let hex := 0x61F23;
+    let oct := 0o1244;
+    let bin := 0b1011101;
+}

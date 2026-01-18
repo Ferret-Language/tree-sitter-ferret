@@ -3,7 +3,10 @@ module.exports = grammar({
 
   extras: ($) => [/\s/, $.line_comment, $.block_comment],
 
-  conflicts: ($) => [[$.block, $.composite_literal]],
+  conflicts: ($) => [
+    [$.block, $.composite_literal],
+    [$.composite_literal, $.cast_expression],
+  ],
 
   rules: {
     source_file: ($) => repeat($._statement),
@@ -24,6 +27,9 @@ module.exports = grammar({
         $.while_statement,
         $.for_statement,
         $.try_statement,
+        $.assignment_statement,
+        $.compound_assignment_statement,
+        $.increment_statement,
         $.expression_statement,
       ),
 
@@ -40,12 +46,10 @@ module.exports = grammar({
     variable_declaration: ($) =>
       seq(
         "let",
-        field("name", $.identifier),
-        optional(seq(":", field("type", $.type))),
-        choice(
-          seq(":=", field("value", $._expression)),
-          seq("=", field("value", $._expression)),
-        ),
+        field("declarations", seq(
+          $.declaration_item,
+          repeat(seq(",", $.declaration_item))
+        )),
         ";",
       ),
 
@@ -53,11 +57,21 @@ module.exports = grammar({
     constant_declaration: ($) =>
       seq(
         "const",
+        field("declarations", seq(
+          $.declaration_item,
+          repeat(seq(",", $.declaration_item))
+        )),
+        ";",
+      ),
+
+    declaration_item: ($) =>
+      seq(
         field("name", $.identifier),
         optional(seq(":", field("type", $.type))),
-        ":=",
-        field("value", $._expression),
-        ";",
+        optional(choice(
+          seq(":=", field("value", $._expression)),
+          seq("=", field("value", $._expression)),
+        )),
       ),
 
     // Type declarations
@@ -144,7 +158,12 @@ module.exports = grammar({
       ),
 
     parameter: ($) =>
-      seq(field("name", $.identifier), ":", field("type", $.type)),
+      seq(
+        field("name", $.identifier),
+        ":",
+        optional("..."),
+        field("type", $.type)
+      ),
 
     return_type: ($) => choice($.type, seq($.type, "!", $.type)),
 
@@ -190,6 +209,20 @@ module.exports = grammar({
 
     expression_statement: ($) => seq($._expression, ";"),
 
+    assignment_statement: ($) =>
+      seq($._expression, "=", $._expression, ";"),
+
+    compound_assignment_statement: ($) =>
+      seq(
+        $._expression,
+        choice("+=", "-=", "*=", "/=", "%="),
+        $._expression,
+        ";"
+      ),
+
+    increment_statement: ($) =>
+      seq($._expression, choice("++", "--"), ";"),
+
     // Expressions
     _expression: ($) =>
       choice(
@@ -204,6 +237,7 @@ module.exports = grammar({
         $.none_literal,
         $.binary_expression,
         $.is_expression,
+        $.cast_expression,
         $.unary_expression,
         $.call_expression,
         $.field_expression,
@@ -242,6 +276,8 @@ module.exports = grammar({
       ),
 
     is_expression: ($) => prec.left(3, seq($._expression, "is", $.type)),
+
+    cast_expression: ($) => prec.left(3, seq($._expression, "as", $.type)),
 
     // Unary expressions
     unary_expression: ($) =>
@@ -346,9 +382,17 @@ module.exports = grammar({
         field("name", choice($.identifier, $.type_identifier)),
       ),
 
+    // Scoped type identifier (for module types like io::Printable)
+    scoped_type_identifier: ($) =>
+      seq(
+        field("scope", choice($.identifier, $.type_identifier)),
+        "::",
+        field("name", $.type_identifier),
+      ),
+
     // Composite literal (map and struct)
     composite_literal: ($) =>
-      choice(
+      prec(12, choice(
         // Empty literal {}
         seq("{", "}"),
         // Map literal: has =>
@@ -360,15 +404,15 @@ module.exports = grammar({
           "}",
         ),
         // Struct literal: has . prefix
-        seq(
+        prec.right(seq(
           "{",
           $.struct_field_init,
           repeat(seq(",", $.struct_field_init)),
           optional(","),
           "}",
           optional(seq("as", $.type)),
-        ),
-      ),
+        )),
+      )),
 
     map_entry: ($) =>
       seq(field("key", $._expression), "=>", field("value", $._expression)),
@@ -419,6 +463,7 @@ module.exports = grammar({
         $.union_type,
         $.interface_type,
         $.primitive_type,
+        $.scoped_type_identifier,
         $.type_identifier,
         $.array_type,
         $.dynamic_array_type,
@@ -548,7 +593,7 @@ module.exports = grammar({
     none_literal: ($) => "none",
 
     // Identifiers
-    identifier: ($) => /[a-z_][a-zA-Z0-9_]*/,
+    identifier: ($) => /[a-zA-Z_][a-zA-Z0-9_]*/,
 
     type_identifier: ($) => /[A-Z][a-zA-Z0-9_]*/,
 
