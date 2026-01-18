@@ -133,7 +133,10 @@ module.exports = grammar({
         field("name", $.identifier),
         field("parameters", $.parameter_list),
         optional(seq("->", field("return_type", $.return_type))),
-        field("body", $.block),
+        choice(
+          field("body", $.block),
+          ";" // Function declaration without body (prototype/extern)
+        ),
       ),
 
     method_receiver: ($) =>
