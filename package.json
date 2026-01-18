@@ -1,6 +1,6 @@
 {
   "name": "tree-sitter-ferret",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Tree-sitter grammar for the Ferret programming language",
   "main": "bindings/node",
   "types": "bindings/node",
@@ -10,7 +10,7 @@
     "ferret",
     "syntax"
   ],
-  "author": "Fuad",
+  "author": "itsfuad",
   "license": "MIT",
   "devDependencies": {
     "tree-sitter-cli": "^0.20.8"
