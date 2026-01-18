@@ -76,7 +76,7 @@ module.exports = grammar({
 
     // Type declarations
     type_declaration: ($) =>
-      seq("type", field("name", $.type_identifier), field("type", $.type), ";"),
+      seq("type", field("name", alias($.identifier, $.type_identifier)), field("type", $.type), ";"),
 
     struct_type: ($) => seq("struct", field("body", $.struct_body)),
 
@@ -123,7 +123,7 @@ module.exports = grammar({
         "}",
       ),
 
-    enum_variant: ($) => $.type_identifier,
+    enum_variant: ($) => alias($.identifier, $.type_identifier),
 
     // Function declarations
     function_declaration: ($) =>
@@ -379,17 +379,17 @@ module.exports = grammar({
     // Scoped identifier (for module access and enum variants)
     scoped_identifier: ($) =>
       seq(
-        field("scope", choice($.identifier, $.type_identifier)),
+        field("scope", $.identifier),
         "::",
-        field("name", choice($.identifier, $.type_identifier)),
+        field("name", $.identifier),
       ),
 
     // Scoped type identifier (for module types like io::Printable)
     scoped_type_identifier: ($) =>
       seq(
-        field("scope", choice($.identifier, $.type_identifier)),
+        field("scope", $.identifier),
         "::",
-        field("name", $.type_identifier),
+        field("name", alias($.identifier, $.type_identifier)),
       ),
 
     // Composite literal (map and struct)
@@ -448,8 +448,8 @@ module.exports = grammar({
         "{",
         optional(
           seq(
-            $.type_identifier,
-            repeat(seq(",", $.type_identifier)),
+            alias($.identifier, $.type_identifier),
+            repeat(seq(",", alias($.identifier, $.type_identifier))),
             optional(","),
           ),
         ),
@@ -466,7 +466,7 @@ module.exports = grammar({
         $.interface_type,
         $.primitive_type,
         $.scoped_type_identifier,
-        $.type_identifier,
+        alias($.identifier, $.type_identifier),
         $.array_type,
         $.dynamic_array_type,
         $.map_type,
@@ -526,7 +526,7 @@ module.exports = grammar({
         1,
         seq(
           choice(
-            $.type_identifier,
+            alias($.identifier, $.type_identifier),
             $.primitive_type,
             $.array_type,
             $.dynamic_array_type,
@@ -547,7 +547,7 @@ module.exports = grammar({
           "&",
           optional("mut"),
           choice(
-            $.type_identifier,
+            alias($.identifier, $.type_identifier),
             $.primitive_type,
             $.array_type,
             $.dynamic_array_type,
@@ -597,7 +597,7 @@ module.exports = grammar({
     // Identifiers
     identifier: ($) => /[a-zA-Z_][a-zA-Z0-9_]*/,
 
-    type_identifier: ($) => /[A-Z][a-zA-Z0-9_]*/,
+    type_identifier: ($) => $.identifier,
 
     field_identifier: ($) => /[a-zA-Z_][a-zA-Z0-9_]*/,
 
