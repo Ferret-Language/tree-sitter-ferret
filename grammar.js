@@ -286,6 +286,8 @@ module.exports = grammar({
         prec.right(9, seq("-", $._expression)),
         prec.right(9, seq("&", optional(field("mutability", "mut")), $._expression)),
         prec.right(9, seq("&'", $._expression)),
+        prec.right(9, seq("@", $._expression)), // Move operator
+        prec.right(9, seq("#", $._expression)), // Heap allocation
       ),
 
     // Call expression
