@@ -597,7 +597,7 @@ module.exports = grammar({
     // Identifiers
     identifier: ($) => /[a-zA-Z_][a-zA-Z0-9_]*/,
 
-    type_identifier: ($) => $.identifier,
+    type_identifier: ($) => /[a-zA-Z_][a-zA-Z0-9_]*/,
 
     field_identifier: ($) => /[a-zA-Z_][a-zA-Z0-9_]*/,
 
