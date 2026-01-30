@@ -312,6 +312,18 @@ module.exports = grammar({
         ),
       ),
 
+    // Method call expression (receiver.method(...))
+    method_call_expression: ($) =>
+      prec(
+        12,
+        seq(
+          field("receiver", $._expression),
+          ".",
+          field("method", $.field_identifier),
+          field("arguments", $.argument_list),
+        ),
+      ),
+
     argument_list: ($) =>
       seq(
         "(",
