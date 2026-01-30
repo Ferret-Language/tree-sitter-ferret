@@ -139,6 +139,14 @@ module.exports = grammar({
         ),
       ),
 
+    function_literal: ($) =>
+      seq(
+        "fn",
+        field("parameters", $.parameter_list),
+        optional(seq("->", field("return_type", $.return_type))),
+        field("body", $.block),
+      ),
+
     method_receiver: ($) =>
       seq(
         "(",
@@ -242,6 +250,7 @@ module.exports = grammar({
         $.is_expression,
         $.cast_expression,
         $.unary_expression,
+        $.function_literal,
         $.call_expression,
         $.field_expression,
         $.index_expression,
@@ -347,7 +356,7 @@ module.exports = grammar({
             seq(
               field("error_name", $.identifier),
               field("error_handler", $.block),
-              field("fallback", $._expression),
+              optional(field("fallback", $._expression)),
             ),
             // Shorthand without handler
             field("fallback", $._expression),
@@ -556,6 +565,7 @@ module.exports = grammar({
             $.dynamic_array_type,
             $.map_type,
             $.optional_type,
+            $.scoped_type_identifier,
             $.struct_type,
             $.enum_type,
             $.union_type,
