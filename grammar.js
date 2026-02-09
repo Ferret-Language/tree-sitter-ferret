@@ -250,6 +250,7 @@ module.exports = grammar({
         $.is_expression,
         $.cast_expression,
         $.unary_expression,
+        $.error_propagate_expression,
         $.function_literal,
         $.call_expression,
         $.field_expression,
@@ -300,6 +301,16 @@ module.exports = grammar({
         prec.right(9, seq("&'", $._expression)),
         prec.right(9, seq("@", $._expression)), // Move operator
         prec.right(9, seq("#", $._expression)), // Heap allocation
+      ),
+
+    // Error propagation expression (postfix !!)
+    error_propagate_expression: ($) =>
+      prec(
+        11,
+        seq(
+          field("expression", $._expression),
+          "!!",
+        ),
       ),
 
     // Call expression
@@ -604,11 +615,22 @@ module.exports = grammar({
     float_literal: ($) => token(/[0-9][0-9_]*\.[0-9][0-9_]*([eE][+-]?[0-9][0-9_]*)?/),
 
     string_literal: ($) =>
-      seq('"', repeat(choice($.escape_sequence, /[^"\\]/)), '"'),
+      token(seq('"', repeat(choice(
+        seq('\\', choice(/[nrt'"\\]/, /x[0-9a-fA-F]{2}/, /u\{[0-9a-fA-F]+\}/)),
+        /[^"\\]/
+      )), '"')),
 
-    char_literal: ($) => seq("'", choice($.escape_sequence, /[^'\\]/), "'"),
+    char_literal: ($) =>
+      token(seq("'", choice(
+        seq('\\', choice(/[nrt'"\\]/, /x[0-9a-fA-F]{2}/, /u\{[0-9a-fA-F]+\}/)),
+        /[^'\\]/
+      ), "'")),
 
-    byte_literal: ($) => seq("b'", choice($.escape_sequence, /[^'\\]/), "'"),
+    byte_literal: ($) =>
+      token(seq("b'", choice(
+        seq('\\', choice(/[nrt'"\\]/, /x[0-9a-fA-F]{2}/, /u\{[0-9a-fA-F]+\}/)),
+        /[^'\\]/
+      ), "'")),
 
     escape_sequence: ($) =>
       token(
