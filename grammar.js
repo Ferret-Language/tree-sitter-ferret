@@ -284,8 +284,10 @@ module.exports = grammar({
         prec.left(6, seq($._expression, choice("*", "/", "%"), $._expression)),
         // Power operator
         prec.right(7, seq($._expression, "**", $._expression)),
+        // Pipe operator
+        prec.left(8, seq($._expression, "|>", $._expression)),
         // Coalescing operator
-        prec.left(8, seq($._expression, "??", $._expression)),
+        prec.left(9, seq($._expression, "??", $._expression)),
       ),
 
     is_expression: ($) => prec.left(3, seq($._expression, "is", $.type)),
