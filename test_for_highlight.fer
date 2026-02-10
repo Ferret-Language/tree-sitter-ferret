@@ -1,0 +1,11 @@
+import "std/io";
+
+fn test() {
+    let data := [1,2,3];
+    for i, v in data {
+        io::Println(v);
+    }
+    if true {
+        io::Println("test");
+    }
+}

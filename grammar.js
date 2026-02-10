@@ -19,14 +19,14 @@ module.exports = grammar({
         $.constant_declaration,
         $.function_declaration,
         $.type_declaration,
+        $.if_statement,
+        $.while_statement,
+        $.for_statement,
         $.return_statement,
         $.break_statement,
         $.continue_statement,
         $.defer_statement,
         $.fork_statement,
-        $.if_statement,
-        $.while_statement,
-        $.for_statement,
         $.try_statement,
         $.assignment_statement,
         $.compound_assignment_statement,
@@ -40,7 +40,7 @@ module.exports = grammar({
         "import",
         field("path", $.string_literal),
         optional(seq("as", field("alias", $.identifier))),
-        ";",
+        optional(";"),
       ),
 
     // Variable declarations
@@ -51,7 +51,7 @@ module.exports = grammar({
           $.declaration_item,
           repeat(seq(",", $.declaration_item))
         )),
-        ";",
+        optional(";"),
       ),
 
     // Constant declarations
@@ -62,7 +62,7 @@ module.exports = grammar({
           $.declaration_item,
           repeat(seq(",", $.declaration_item))
         )),
-        ";",
+        optional(";"),
       ),
 
     declaration_item: ($) =>
@@ -77,7 +77,7 @@ module.exports = grammar({
 
     // Type declarations
     type_declaration: ($) =>
-      seq("type", field("name", alias($.identifier, $.type_identifier)), field("type", $.type), ";"),
+      seq("type", field("name", alias($.identifier, $.type_identifier)), field("type", $.type), optional(";")),
 
     struct_type: ($) => seq("struct", field("body", $.struct_body)),
 
@@ -96,7 +96,7 @@ module.exports = grammar({
         field("name", $.identifier),
         field("parameters", $.parameter_list),
         optional(seq("->", field("return_type", $.return_type))),
-        ";",
+        optional(";"),
       ),
 
     field_declaration: ($) =>
@@ -198,42 +198,48 @@ module.exports = grammar({
     for_statement: ($) =>
       seq(
         "for",
-        "let",
-        field("variable", $.identifier),
+        choice(
+          seq(
+            field("index", $.identifier),
+            ",",
+            field("value", $.identifier)
+          ),
+          field("variable", $.identifier)
+        ),
         "in",
-        field("range", $.range_expression),
+        field("iterable", $._expression),
         field("body", $.block),
       ),
 
     return_statement: ($) =>
-      seq("return", optional($._expression), optional("!"), ";"),
+      prec.right(seq("return", optional($._expression), optional("!"), optional(";"))),
 
-    break_statement: ($) => seq("break", ";"),
+    break_statement: ($) => seq("break", optional(";")),
 
-    continue_statement: ($) => seq("continue", ";"),
+    continue_statement: ($) => seq("continue", optional(";")),
 
-    defer_statement: ($) => seq("defer", $._expression, ";"),
+    defer_statement: ($) => prec.right(seq("defer", $._expression, optional(";"))),
 
-    fork_statement: ($) => seq("fork", $._expression, ";"),
+    fork_statement: ($) => seq("fork", $._expression, optional(";")),
 
     try_statement: ($) =>
-      seq("try", field("expression", $._expression), ";"),
+      seq("try", field("expression", $._expression), optional(";")),
 
-    expression_statement: ($) => seq($._expression, ";"),
+    expression_statement: ($) => seq($._expression, optional(";")),
 
     assignment_statement: ($) =>
-      seq($._expression, "=", $._expression, ";"),
+      seq($._expression, "=", $._expression, optional(";")),
 
     compound_assignment_statement: ($) =>
       seq(
         $._expression,
         choice("+=", "-=", "*=", "/=", "%="),
         $._expression,
-        ";"
+        optional(";")
       ),
 
     increment_statement: ($) =>
-      seq($._expression, choice("++", "--"), ";"),
+      seq($._expression, choice("++", "--"), optional(";")),
 
     // Expressions
     _expression: ($) =>
@@ -516,6 +522,7 @@ module.exports = grammar({
         $.enum_type,
         $.union_type,
         $.interface_type,
+        $.function_type,
         $.primitive_type,
         $.scoped_type_identifier,
         alias($.identifier, $.type_identifier),
@@ -618,6 +625,28 @@ module.exports = grammar({
       prec.right(
         10,
         seq(field("error_type", $.type), "!", field("success_type", $.type)),
+      ),
+
+    function_type: ($) =>
+      seq(
+        "fn",
+        "(",
+        optional(seq(
+          $.function_type_parameter,
+          repeat(seq(",", $.function_type_parameter))
+        )),
+        ")",
+        optional(seq("->", field("return_type", $.type))),
+      ),
+
+    function_type_parameter: ($) =>
+      choice(
+        seq(
+          optional(choice("_", field("name", $.identifier))),
+          ":",
+          field("type", $.type)
+        ),
+        seq("...", field("type", $.type))
       ),
 
     // Literals

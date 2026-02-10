@@ -1,0 +1,5 @@
+fn printArr(data: []i32) {
+    for i, v in data {
+        io::Print(v);
+    }
+}
