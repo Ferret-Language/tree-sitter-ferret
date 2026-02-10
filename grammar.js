@@ -311,7 +311,6 @@ module.exports = grammar({
         prec.right(20, seq("!", $._expression)),
         prec.right(20, seq("-", $._expression)),
         prec.right(20, seq("&", optional(field("mutability", "mut")), $._expression)),
-        prec.right(20, seq("&'", $._expression)),
         prec.right(20, seq("@", $._expression)), // Move operator
         prec.right(20, seq("#", $._expression)), // Heap allocation
         prec.right(20, seq("~", $._expression)), // Bitwise NOT
@@ -357,11 +356,7 @@ module.exports = grammar({
       seq(
         "(",
         optional(
-          seq(
-            choice($._expression, seq("...", $._expression)),
-            repeat(seq(",", choice($._expression, seq("...", $._expression)))),
-            optional(",")
-          ),
+          seq($._expression, repeat(seq(",", $._expression)), optional(",")),
         ),
         ")",
       ),
@@ -489,11 +484,7 @@ module.exports = grammar({
       seq(
         "[",
         optional(
-          seq(
-            choice($._expression, seq("...", $._expression)),
-            repeat(seq(",", choice($._expression, seq("...", $._expression)))),
-            optional(",")
-          ),
+          seq($._expression, repeat(seq(",", $._expression)), optional(",")),
         ),
         "]",
       ),
