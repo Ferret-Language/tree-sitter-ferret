@@ -6,6 +6,7 @@ module.exports = grammar({
   conflicts: ($) => [
     [$.block, $.composite_literal],
     [$.composite_literal, $.cast_expression],
+    [$.composite_literal, $.map_entry],
   ],
 
   rules: {
@@ -246,6 +247,7 @@ module.exports = grammar({
         $.byte_literal,
         $.boolean_literal,
         $.none_literal,
+        $.spread_expression,
         $.binary_expression,
         $.is_expression,
         $.cast_expression,
@@ -270,24 +272,33 @@ module.exports = grammar({
     // Binary expressions
     binary_expression: ($) =>
       choice(
-        // Logical
-        prec.left(1, seq($._expression, "||", $._expression)),
-        prec.left(2, seq($._expression, "&&", $._expression)),
+        // Pipe operator (lowest precedence after basic)
+        prec.left(2, seq($._expression, "|>", $._expression)),
+        // Coalescing operator
+        prec.left(3, seq($._expression, "??", $._expression)),
+        // Logical OR
+        prec.left(4, seq($._expression, "||", $._expression)),
+        // Logical AND
+        prec.left(5, seq($._expression, "&&", $._expression)),
+        // Bitwise OR
+        prec.left(6, seq($._expression, "|", $._expression)),
+        // Bitwise XOR
+        prec.left(7, seq($._expression, "^", $._expression)),
+        // Bitwise AND
+        prec.left(8, seq($._expression, "&", $._expression)),
+        // Equality
+        prec.left(9, seq($._expression, choice("==", "!="), $._expression)),
         // Comparison
-        prec.left(3, seq($._expression, choice("==", "!="), $._expression)),
         prec.left(
-          4,
+          10,
           seq($._expression, choice("<", ">", "<=", ">="), $._expression),
         ),
-        // Arithmetic
-        prec.left(5, seq($._expression, choice("+", "-"), $._expression)),
-        prec.left(6, seq($._expression, choice("*", "/", "%"), $._expression)),
-        // Power operator
-        prec.right(7, seq($._expression, "**", $._expression)),
-        // Pipe operator
-        prec.left(8, seq($._expression, "|>", $._expression)),
-        // Coalescing operator
-        prec.left(9, seq($._expression, "??", $._expression)),
+        // Additive
+        prec.left(11, seq($._expression, choice("+", "-"), $._expression)),
+        // Multiplicative
+        prec.left(12, seq($._expression, choice("*", "/", "%"), $._expression)),
+        // Power operator (right-associative)
+        prec.right(13, seq($._expression, "**", $._expression)),
       ),
 
     is_expression: ($) => prec.left(3, seq($._expression, "is", $.type)),
@@ -297,13 +308,18 @@ module.exports = grammar({
     // Unary expressions
     unary_expression: ($) =>
       choice(
-        prec.right(9, seq("!", $._expression)),
-        prec.right(9, seq("-", $._expression)),
-        prec.right(9, seq("&", optional(field("mutability", "mut")), $._expression)),
-        prec.right(9, seq("&'", $._expression)),
-        prec.right(9, seq("@", $._expression)), // Move operator
-        prec.right(9, seq("#", $._expression)), // Heap allocation
+        prec.right(20, seq("!", $._expression)),
+        prec.right(20, seq("-", $._expression)),
+        prec.right(20, seq("&", optional(field("mutability", "mut")), $._expression)),
+        prec.right(20, seq("&'", $._expression)),
+        prec.right(20, seq("@", $._expression)), // Move operator
+        prec.right(20, seq("#", $._expression)), // Heap allocation
+        prec.right(20, seq("~", $._expression)), // Bitwise NOT
       ),
+
+    // Spread expression
+    spread_expression: ($) =>
+      prec.right(20, seq("...", $._expression)),
 
     // Error propagation expression (postfix !!)
     error_propagate_expression: ($) =>
@@ -341,7 +357,11 @@ module.exports = grammar({
       seq(
         "(",
         optional(
-          seq($._expression, repeat(seq(",", $._expression)), optional(",")),
+          seq(
+            choice($._expression, seq("...", $._expression)),
+            repeat(seq(",", choice($._expression, seq("...", $._expression)))),
+            optional(",")
+          ),
         ),
         ")",
       ),
@@ -469,7 +489,11 @@ module.exports = grammar({
       seq(
         "[",
         optional(
-          seq($._expression, repeat(seq(",", $._expression)), optional(",")),
+          seq(
+            choice($._expression, seq("...", $._expression)),
+            repeat(seq(",", choice($._expression, seq("...", $._expression)))),
+            optional(",")
+          ),
         ),
         "]",
       ),

@@ -1,0 +1,45 @@
+fn main() {
+  let x := 5
+  let y = 10
+  let z = x + y - 1
+  
+  // Arithmetic and power
+  let a = 2 ** 3
+  let b = a * 2 / 4 % 3
+  
+  // Logical
+  let c = true && false
+  let d = true || false
+  
+  // Comparison
+  let e = x == y
+  let f = x != y
+  let g = x < y
+  let h = x > y
+  let i = x <= y
+  let j = x >= y
+  
+  // Coalescing
+  let k = x ?? 0
+  
+  // Pipe
+  let result = x |> add(10)
+  
+  // Assignment operators
+  x += 5
+  y -= 2
+  z *= 3
+  a /= 2
+  b %= 4
+  
+  // Increment/Decrement
+  x++
+  y--
+  
+  // Reference and move
+  let ref = &x
+  let moved = @z
+  
+  // Error propagation
+  let propagated = some_func()!!
+}
