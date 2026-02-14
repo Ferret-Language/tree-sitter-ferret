@@ -1,0 +1,22 @@
+
+fn (f: @File) Close() {
+    
+}
+
+fn main() {
+    let i: i32 = 0;
+    let xs: []i32 = [100, 200];
+    
+    // Case 1: Direct assignment
+    let value: i32 = len(xs);
+    
+    // Case 2: In while condition (right side)
+    while i < len(xs) {
+        i += 1;
+    }
+    
+    // Case 3: In while condition (left side)  
+    while len(xs) > i {
+        i += 1;
+    }
+}
