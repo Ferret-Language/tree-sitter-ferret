@@ -1199,6 +1199,10 @@
         },
         {
           "type": "SYMBOL",
+          "name": "imaginary_literal"
+        },
+        {
+          "type": "SYMBOL",
           "name": "integer_literal"
         },
         {
@@ -3445,6 +3449,13 @@
       "content": {
         "type": "PATTERN",
         "value": "[0-9][0-9_]*\\.[0-9][0-9_]*([eE][+-]?[0-9][0-9_]*)?"
+      }
+    },
+    "imaginary_literal": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PATTERN",
+        "value": "[0-9][0-9_]*(\\.[0-9][0-9_]*)?([eE][+-]?[0-9][0-9_]*)?i"
       }
     },
     "string_literal": {

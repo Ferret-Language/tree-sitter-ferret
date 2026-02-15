@@ -169,6 +169,7 @@ module.exports = grammar({
       choice(
         $.identifier,
         $.scoped_identifier,
+        $.imaginary_literal,
         $.integer_literal,
         $.float_literal,
         $.string_literal,
@@ -476,6 +477,10 @@ module.exports = grammar({
       ),
 
     float_literal: ($) => token(/[0-9][0-9_]*\.[0-9][0-9_]*([eE][+-]?[0-9][0-9_]*)?/),
+
+
+    imaginary_literal: ($) =>
+      token(/[0-9][0-9_]*(\.[0-9][0-9_]*)?([eE][+-]?[0-9][0-9_]*)?i/),
 
     string_literal: ($) =>
       token(
