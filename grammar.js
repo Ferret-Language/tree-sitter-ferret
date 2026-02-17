@@ -304,6 +304,16 @@ module.exports = grammar({
     // =====================
 
     scoped_identifier: ($) => seq(field("scope", $.identifier), "::", field("name", $.identifier)),
+    
+    reference_type: ($) =>
+      prec.right(
+        4,
+        seq(
+          "&",
+          optional("mut"),
+          field("base", $.type),
+        ),
+      ),
 
     scoped_type_identifier: ($) =>
       seq(field("scope", $.identifier), "::", field("name", alias($.identifier, $.type_identifier))),
@@ -360,6 +370,10 @@ module.exports = grammar({
 
     interface_method: ($) =>
       seq(
+        optional(choice("~", "@", seq(
+          "&",
+          optional("mut")
+        ))),
         field("name", $.identifier),
         field("parameters", $.parameter_list),
         optional(seq("->", field("return_type", $.return_type))),
@@ -437,16 +451,6 @@ module.exports = grammar({
     optional_type: ($) => prec.right(2, seq("?", field("base", $.type))),
 
     heap_type: ($) => prec.right(3, seq("#", field("base", $.type))),
-
-    reference_type: ($) =>
-      prec.right(
-        4,
-        seq(
-          "&",
-          optional("mut"),
-          field("base", $.type),
-        ),
-      ),
 
     result_type: ($) => prec.right(10, seq(field("error_type", $.type), "!", field("success_type", $.type))),
 

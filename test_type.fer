@@ -10,8 +10,9 @@ type Point struct {
 type Shape enum { Circle, Square, };
 
 type Stream interface {
-  read();
-  write() -> i32;
+  ~read();
+  &write() -> i32;
+  @do();
 };
 
 let anon: struct { .v: i32, } = { .v = 1 };
