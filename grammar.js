@@ -17,7 +17,9 @@ module.exports = grammar({
     [$._postfix_expression, $._generic_call_target],
     [$.constraint_type_term, $.type],
     [$.constraint_union_expression, $.union_body],
+    [$.catch_expression, $.expression_statement],
   ],
+
 
   rules: {
     source_file: ($) => repeat($._statement),
@@ -48,6 +50,7 @@ module.exports = grammar({
     // =====================
     // Decls / Stmts
     // =====================
+
 
     import_declaration: ($) =>
       seq(
@@ -98,6 +101,7 @@ module.exports = grammar({
 
     function_declaration: ($) =>
       seq(
+        repeat(field("attribute", $.attribute_group)),
         "fn",
         optional($.method_receiver),
         field("name", $.identifier),
@@ -106,6 +110,25 @@ module.exports = grammar({
         optional(seq("->", field("return_type", $.return_type))),
         choice(field("body", $.block), ";"),
       ),
+
+    attribute_group: ($) =>
+      seq(
+        "#",
+        "[",
+        field("attribute", $.attribute_item),
+        repeat(seq(",", field("attribute", $.attribute_item))),
+        optional(","),
+        "]",
+      ),
+
+    attribute_item: ($) =>
+      seq(
+        field("name", $.identifier),
+        optional(field("arguments", $.attribute_argument_list)),
+      ),
+
+    attribute_argument_list: ($) =>
+      seq("(", optional(seq($._expression, repeat(seq(",", $._expression)), optional(","))), ")"),
 
     function_literal: ($) =>
       seq(
@@ -118,6 +141,7 @@ module.exports = grammar({
     method_receiver: ($) =>
       seq(
         "(",
+        optional(field("comptime", "comptime")),
         field("name", $.identifier),
         ":",
         optional(field("move", "@")),
@@ -139,6 +163,7 @@ module.exports = grammar({
 
     parameter: ($) =>
       seq(
+        optional(field("comptime", "comptime")),
         field("name", $.identifier),
         ":",
         optional("..."),
@@ -147,7 +172,8 @@ module.exports = grammar({
         optional(seq("=", field("default", $._expression))),
       ),
 
-    return_type: ($) => choice($.type, seq($.type, "!", $.type)),
+    return_type: ($) =>
+      choice($.type, seq(optional(field("error_type", $.type)), "!", field("success_type", $.type))),
 
     block: ($) => seq("{", repeat($._statement), "}"),
 
@@ -227,6 +253,7 @@ module.exports = grammar({
       choice(
         $._postfix_expression,
         $.spread_expression,
+        $.comptime_expression,
         $.binary_expression,
         $.is_expression,
         $.cast_expression,
@@ -236,6 +263,12 @@ module.exports = grammar({
       ),
 
     parenthesized_expression: ($) => seq("(", $._expression, ")"),
+
+    comptime_expression: ($) =>
+      prec.right(
+        20,
+        seq("comptime", field("value", choice($.block, $._expression))),
+      ),
 
     binary_expression: ($) =>
       choice(
@@ -262,7 +295,6 @@ module.exports = grammar({
         prec.right(20, seq("-", $._expression)),
         prec.right(20, seq("&", optional(field("mutability", "mut")), $._expression)),
         prec.right(20, seq("@", $._expression)),
-        prec.right(20, seq("#", $._expression)),
         prec.right(20, seq("~", $._expression)),
       ),
 
@@ -312,16 +344,25 @@ module.exports = grammar({
           field("expression", $._expression),
           "catch",
           choice(
-            seq(
-              field("error_name", $.identifier),
-              field("error_handler", $.block),
-              optional(field("fallback", $._expression)),
+            prec.dynamic(
+              3,
+              seq(
+                optional(field("error_name", $.identifier)),
+                field("error_handler", $.block),
+                field("fallback", $._expression),
+              ),
+            ),
+            prec.dynamic(
+              1,
+              seq(
+                optional(field("error_name", $.identifier)),
+                field("error_handler", $.block),
+              ),
             ),
             field("fallback", $._expression),
           ),
         ),
       ),
-
     range_expression: ($) => prec.left(2, seq($._expression, "..", $._expression)),
 
     match_expression: ($) =>
@@ -353,7 +394,7 @@ module.exports = grammar({
         4,
         seq(
           "&",
-          optional("mut"),
+          optional(choice("mut", "own")),
           field("base", $.type),
         ),
       ),
@@ -441,7 +482,6 @@ module.exports = grammar({
         $.dynamic_array_type,
         $.map_type,
         $.optional_type,
-        $.heap_type,
         $.reference_type,
       ),
 
@@ -471,7 +511,7 @@ module.exports = grammar({
         field("name", alias($.identifier, $.field_identifier)),
         ":",
         field("type", $.type),
-        ",",
+        optional(","),
       ),
 
     enum_body: ($) =>
@@ -511,7 +551,6 @@ module.exports = grammar({
         $.dynamic_array_type,
         $.map_type,
         $.optional_type,
-        $.heap_type,
         $.reference_type,
       ),
 
@@ -544,10 +583,8 @@ module.exports = grammar({
     map_type: ($) => seq("map", "[", field("key_type", $.type), "]", field("value_type", $.type)),
 
     optional_type: ($) => prec.right(2, seq("?", field("base", $.type))),
-
-    heap_type: ($) => prec.right(3, seq("#", field("base", $.type))),
-
-    result_type: ($) => prec.right(10, seq(field("error_type", $.type), "!", field("success_type", $.type))),
+    result_type: ($) =>
+      prec.right(10, seq(optional(field("error_type", $.type)), "!", field("success_type", $.type))),
 
     function_type: ($) =>
       seq(
@@ -560,7 +597,12 @@ module.exports = grammar({
 
     function_type_parameter: ($) =>
       choice(
-        seq(optional(choice("_", field("name", $.identifier))), ":", field("type", $.type)),
+        seq(
+          optional(field("comptime", "comptime")),
+          optional(choice("_", field("name", $.identifier))),
+          ":",
+          field("type", $.type),
+        ),
         seq("...", field("type", $.type)),
       ),
 

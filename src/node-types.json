@@ -112,6 +112,10 @@
           "named": true
         },
         {
+          "type": "comptime_expression",
+          "named": true
+        },
+        {
           "type": "error_propagate_expression",
           "named": true
         },
@@ -236,6 +240,10 @@
         },
         {
           "type": "composite_literal",
+          "named": true
+        },
+        {
+          "type": "comptime_expression",
           "named": true
         },
         {
@@ -392,6 +400,10 @@
           "named": true
         },
         {
+          "type": "comptime_expression",
+          "named": true
+        },
+        {
           "type": "error_propagate_expression",
           "named": true
         },
@@ -467,6 +479,179 @@
     }
   },
   {
+    "type": "attribute_argument_list",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "anonymous_enum_literal",
+          "named": true
+        },
+        {
+          "type": "anonymous_struct_literal",
+          "named": true
+        },
+        {
+          "type": "array_literal",
+          "named": true
+        },
+        {
+          "type": "binary_expression",
+          "named": true
+        },
+        {
+          "type": "boolean_literal",
+          "named": true
+        },
+        {
+          "type": "byte_literal",
+          "named": true
+        },
+        {
+          "type": "call_expression",
+          "named": true
+        },
+        {
+          "type": "cast_expression",
+          "named": true
+        },
+        {
+          "type": "catch_expression",
+          "named": true
+        },
+        {
+          "type": "char_literal",
+          "named": true
+        },
+        {
+          "type": "composite_literal",
+          "named": true
+        },
+        {
+          "type": "comptime_expression",
+          "named": true
+        },
+        {
+          "type": "error_propagate_expression",
+          "named": true
+        },
+        {
+          "type": "field_expression",
+          "named": true
+        },
+        {
+          "type": "float_literal",
+          "named": true
+        },
+        {
+          "type": "function_literal",
+          "named": true
+        },
+        {
+          "type": "generic_call_expression",
+          "named": true
+        },
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "imaginary_literal",
+          "named": true
+        },
+        {
+          "type": "index_expression",
+          "named": true
+        },
+        {
+          "type": "integer_literal",
+          "named": true
+        },
+        {
+          "type": "is_expression",
+          "named": true
+        },
+        {
+          "type": "match_expression",
+          "named": true
+        },
+        {
+          "type": "none_literal",
+          "named": true
+        },
+        {
+          "type": "parenthesized_expression",
+          "named": true
+        },
+        {
+          "type": "range_expression",
+          "named": true
+        },
+        {
+          "type": "scoped_identifier",
+          "named": true
+        },
+        {
+          "type": "spread_expression",
+          "named": true
+        },
+        {
+          "type": "string_literal",
+          "named": true
+        },
+        {
+          "type": "unary_expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "attribute_group",
+    "named": true,
+    "fields": {
+      "attribute": {
+        "multiple": true,
+        "required": true,
+        "types": [
+          {
+            "type": "attribute_item",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "attribute_item",
+    "named": true,
+    "fields": {
+      "arguments": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "attribute_argument_list",
+            "named": true
+          }
+        ]
+      },
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
     "type": "binary_expression",
     "named": true,
     "fields": {},
@@ -516,6 +701,10 @@
         },
         {
           "type": "composite_literal",
+          "named": true
+        },
+        {
+          "type": "comptime_expression",
           "named": true
         },
         {
@@ -853,6 +1042,10 @@
           "named": true
         },
         {
+          "type": "comptime_expression",
+          "named": true
+        },
+        {
           "type": "error_propagate_expression",
           "named": true
         },
@@ -1004,6 +1197,10 @@
             "named": true
           },
           {
+            "type": "comptime_expression",
+            "named": true
+          },
+          {
             "type": "error_propagate_expression",
             "named": true
           },
@@ -1123,6 +1320,10 @@
           },
           {
             "type": "composite_literal",
+            "named": true
+          },
+          {
+            "type": "comptime_expression",
             "named": true
           },
           {
@@ -1277,6 +1478,10 @@
           "named": true
         },
         {
+          "type": "comptime_expression",
+          "named": true
+        },
+        {
           "type": "error_propagate_expression",
           "named": true
         },
@@ -1349,6 +1554,142 @@
           "named": true
         }
       ]
+    }
+  },
+  {
+    "type": "comptime_expression",
+    "named": true,
+    "fields": {
+      "value": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "anonymous_enum_literal",
+            "named": true
+          },
+          {
+            "type": "anonymous_struct_literal",
+            "named": true
+          },
+          {
+            "type": "array_literal",
+            "named": true
+          },
+          {
+            "type": "binary_expression",
+            "named": true
+          },
+          {
+            "type": "block",
+            "named": true
+          },
+          {
+            "type": "boolean_literal",
+            "named": true
+          },
+          {
+            "type": "byte_literal",
+            "named": true
+          },
+          {
+            "type": "call_expression",
+            "named": true
+          },
+          {
+            "type": "cast_expression",
+            "named": true
+          },
+          {
+            "type": "catch_expression",
+            "named": true
+          },
+          {
+            "type": "char_literal",
+            "named": true
+          },
+          {
+            "type": "composite_literal",
+            "named": true
+          },
+          {
+            "type": "comptime_expression",
+            "named": true
+          },
+          {
+            "type": "error_propagate_expression",
+            "named": true
+          },
+          {
+            "type": "field_expression",
+            "named": true
+          },
+          {
+            "type": "float_literal",
+            "named": true
+          },
+          {
+            "type": "function_literal",
+            "named": true
+          },
+          {
+            "type": "generic_call_expression",
+            "named": true
+          },
+          {
+            "type": "identifier",
+            "named": true
+          },
+          {
+            "type": "imaginary_literal",
+            "named": true
+          },
+          {
+            "type": "index_expression",
+            "named": true
+          },
+          {
+            "type": "integer_literal",
+            "named": true
+          },
+          {
+            "type": "is_expression",
+            "named": true
+          },
+          {
+            "type": "match_expression",
+            "named": true
+          },
+          {
+            "type": "none_literal",
+            "named": true
+          },
+          {
+            "type": "parenthesized_expression",
+            "named": true
+          },
+          {
+            "type": "range_expression",
+            "named": true
+          },
+          {
+            "type": "scoped_identifier",
+            "named": true
+          },
+          {
+            "type": "spread_expression",
+            "named": true
+          },
+          {
+            "type": "string_literal",
+            "named": true
+          },
+          {
+            "type": "unary_expression",
+            "named": true
+          }
+        ]
+      }
     }
   },
   {
@@ -1489,10 +1830,6 @@
         },
         {
           "type": "function_type",
-          "named": true
-        },
-        {
-          "type": "heap_type",
           "named": true
         },
         {
@@ -1643,6 +1980,10 @@
             "named": true
           },
           {
+            "type": "comptime_expression",
+            "named": true
+          },
+          {
             "type": "error_propagate_expression",
             "named": true
           },
@@ -1768,6 +2109,10 @@
         },
         {
           "type": "composite_literal",
+          "named": true
+        },
+        {
+          "type": "comptime_expression",
           "named": true
         },
         {
@@ -2060,6 +2405,10 @@
           "named": true
         },
         {
+          "type": "comptime_expression",
+          "named": true
+        },
+        {
           "type": "error_propagate_expression",
           "named": true
         },
@@ -2343,6 +2692,10 @@
             "named": true
           },
           {
+            "type": "comptime_expression",
+            "named": true
+          },
+          {
             "type": "error_propagate_expression",
             "named": true
           },
@@ -2491,6 +2844,10 @@
           "named": true
         },
         {
+          "type": "comptime_expression",
+          "named": true
+        },
+        {
           "type": "error_propagate_expression",
           "named": true
         },
@@ -2569,6 +2926,16 @@
     "type": "function_declaration",
     "named": true,
     "fields": {
+      "attribute": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": "attribute_group",
+            "named": true
+          }
+        ]
+      },
       "body": {
         "multiple": false,
         "required": false,
@@ -2697,6 +3064,16 @@
     "type": "function_type_parameter",
     "named": true,
     "fields": {
+      "comptime": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "comptime",
+            "named": false
+          }
+        ]
+      },
       "name": {
         "multiple": false,
         "required": false,
@@ -2757,22 +3134,6 @@
         "types": [
           {
             "type": "type_argument_list",
-            "named": true
-          }
-        ]
-      }
-    }
-  },
-  {
-    "type": "heap_type",
-    "named": true,
-    "fields": {
-      "base": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "type",
             "named": true
           }
         ]
@@ -2843,6 +3204,10 @@
           },
           {
             "type": "composite_literal",
+            "named": true
+          },
+          {
+            "type": "comptime_expression",
             "named": true
           },
           {
@@ -3007,6 +3372,10 @@
         },
         {
           "type": "composite_literal",
+          "named": true
+        },
+        {
+          "type": "comptime_expression",
           "named": true
         },
         {
@@ -3231,6 +3600,10 @@
             "named": true
           },
           {
+            "type": "comptime_expression",
+            "named": true
+          },
+          {
             "type": "error_propagate_expression",
             "named": true
           },
@@ -3426,6 +3799,10 @@
           "named": true
         },
         {
+          "type": "comptime_expression",
+          "named": true
+        },
+        {
           "type": "error_propagate_expression",
           "named": true
         },
@@ -3557,6 +3934,10 @@
             "named": true
           },
           {
+            "type": "comptime_expression",
+            "named": true
+          },
+          {
             "type": "error_propagate_expression",
             "named": true
           },
@@ -3676,6 +4057,10 @@
           },
           {
             "type": "composite_literal",
+            "named": true
+          },
+          {
+            "type": "comptime_expression",
             "named": true
           },
           {
@@ -3837,6 +4222,10 @@
             "named": true
           },
           {
+            "type": "comptime_expression",
+            "named": true
+          },
+          {
             "type": "error_propagate_expression",
             "named": true
           },
@@ -3956,6 +4345,10 @@
           },
           {
             "type": "composite_literal",
+            "named": true
+          },
+          {
+            "type": "comptime_expression",
             "named": true
           },
           {
@@ -4091,6 +4484,10 @@
             "named": true
           },
           {
+            "type": "comptime_expression",
+            "named": true
+          },
+          {
             "type": "error_propagate_expression",
             "named": true
           },
@@ -4180,6 +4577,16 @@
     "type": "method_receiver",
     "named": true,
     "fields": {
+      "comptime": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "comptime",
+            "named": false
+          }
+        ]
+      },
       "move": {
         "multiple": false,
         "required": false,
@@ -4232,6 +4639,16 @@
     "type": "parameter",
     "named": true,
     "fields": {
+      "comptime": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "comptime",
+            "named": false
+          }
+        ]
+      },
       "default": {
         "multiple": false,
         "required": false,
@@ -4278,6 +4695,10 @@
           },
           {
             "type": "composite_literal",
+            "named": true
+          },
+          {
+            "type": "comptime_expression",
             "named": true
           },
           {
@@ -4454,6 +4875,10 @@
           "named": true
         },
         {
+          "type": "comptime_expression",
+          "named": true
+        },
+        {
           "type": "error_propagate_expression",
           "named": true
         },
@@ -4586,6 +5011,10 @@
           "named": true
         },
         {
+          "type": "comptime_expression",
+          "named": true
+        },
+        {
           "type": "error_propagate_expression",
           "named": true
         },
@@ -4682,7 +5111,7 @@
     "fields": {
       "error_type": {
         "multiple": false,
-        "required": true,
+        "required": false,
         "types": [
           {
             "type": "type",
@@ -4752,6 +5181,10 @@
         },
         {
           "type": "composite_literal",
+          "named": true
+        },
+        {
+          "type": "comptime_expression",
           "named": true
         },
         {
@@ -4832,10 +5265,31 @@
   {
     "type": "return_type",
     "named": true,
-    "fields": {},
+    "fields": {
+      "error_type": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "type",
+            "named": true
+          }
+        ]
+      },
+      "success_type": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "type",
+            "named": true
+          }
+        ]
+      }
+    },
     "children": {
-      "multiple": true,
-      "required": true,
+      "multiple": false,
+      "required": false,
       "types": [
         {
           "type": "type",
@@ -4899,7 +5353,6 @@
   {
     "type": "source_file",
     "named": true,
-    "root": true,
     "fields": {},
     "children": {
       "multiple": true,
@@ -5034,6 +5487,10 @@
         },
         {
           "type": "composite_literal",
+          "named": true
+        },
+        {
+          "type": "comptime_expression",
           "named": true
         },
         {
@@ -5189,6 +5646,10 @@
             "named": true
           },
           {
+            "type": "comptime_expression",
+            "named": true
+          },
+          {
             "type": "error_propagate_expression",
             "named": true
           },
@@ -5333,6 +5794,10 @@
             "named": true
           },
           {
+            "type": "comptime_expression",
+            "named": true
+          },
+          {
             "type": "error_propagate_expression",
             "named": true
           },
@@ -5434,10 +5899,6 @@
         },
         {
           "type": "function_type",
-          "named": true
-        },
-        {
-          "type": "heap_type",
           "named": true
         },
         {
@@ -5639,6 +6100,10 @@
           "named": true
         },
         {
+          "type": "comptime_expression",
+          "named": true
+        },
+        {
           "type": "error_propagate_expression",
           "named": true
         },
@@ -5824,6 +6289,10 @@
           },
           {
             "type": "composite_literal",
+            "named": true
+          },
+          {
+            "type": "comptime_expression",
             "named": true
           },
           {
@@ -6089,8 +6558,7 @@
   },
   {
     "type": "block_comment",
-    "named": true,
-    "extra": true
+    "named": true
   },
   {
     "type": "bool",
@@ -6119,6 +6587,10 @@
   {
     "type": "char_literal",
     "named": true
+  },
+  {
+    "type": "comptime",
+    "named": false
   },
   {
     "type": "const",
@@ -6246,8 +6718,7 @@
   },
   {
     "type": "line_comment",
-    "named": true,
-    "extra": true
+    "named": true
   },
   {
     "type": "map",
@@ -6264,6 +6735,10 @@
   {
     "type": "none_literal",
     "named": true
+  },
+  {
+    "type": "own",
+    "named": false
   },
   {
     "type": "return",
