@@ -144,7 +144,7 @@ module.exports = grammar({
         optional(field("comptime", "comptime")),
         field("name", $.identifier),
         ":",
-        optional(field("move", "@")),
+        optional(field("move", "move")),
         field("type", $.type),
         ")",
       ),
@@ -167,7 +167,7 @@ module.exports = grammar({
         field("name", $.identifier),
         ":",
         optional("..."),
-        optional(field("move", "@")),
+        optional(field("move", "move")),
         field("type", $.type),
         optional(seq("=", field("default", $._expression))),
       ),
@@ -294,7 +294,7 @@ module.exports = grammar({
         prec.right(20, seq("!", $._expression)),
         prec.right(20, seq("-", $._expression)),
         prec.right(20, seq("&", optional(field("mutability", "mut")), $._expression)),
-        prec.right(20, seq("@", $._expression)),
+        prec.right(20, seq("move", $._expression)),
         prec.right(20, seq("~", $._expression)),
       ),
 
@@ -495,7 +495,7 @@ module.exports = grammar({
 
     interface_method: ($) =>
       seq(
-        optional(choice("~", "@", seq(
+        optional(choice("~", "move", seq(
           "&",
           optional("mut")
         ))),

@@ -4592,7 +4592,7 @@
         "required": false,
         "types": [
           {
-            "type": "@",
+            "type": "move",
             "named": false
           }
         ]
@@ -4780,7 +4780,7 @@
         "required": false,
         "types": [
           {
-            "type": "@",
+            "type": "move",
             "named": false
           }
         ]
@@ -6533,10 +6533,6 @@
     "named": false
   },
   {
-    "type": "@",
-    "named": false
-  },
-  {
     "type": "[",
     "named": false
   },
@@ -6726,6 +6722,10 @@
   },
   {
     "type": "match",
+    "named": false
+  },
+  {
+    "type": "move",
     "named": false
   },
   {
