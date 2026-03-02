@@ -3064,16 +3064,6 @@
     "type": "function_type_parameter",
     "named": true,
     "fields": {
-      "comptime": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "comptime",
-            "named": false
-          }
-        ]
-      },
       "name": {
         "multiple": false,
         "required": false,
@@ -3094,6 +3084,16 @@
           }
         ]
       }
+    },
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "parameter_modifiers",
+          "named": true
+        }
+      ]
     }
   },
   {
@@ -4577,26 +4577,6 @@
     "type": "method_receiver",
     "named": true,
     "fields": {
-      "comptime": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "comptime",
-            "named": false
-          }
-        ]
-      },
-      "move": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "move",
-            "named": false
-          }
-        ]
-      },
       "name": {
         "multiple": false,
         "required": true,
@@ -4617,6 +4597,16 @@
           }
         ]
       }
+    },
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "parameter_modifiers",
+          "named": true
+        }
+      ]
     }
   },
   {
@@ -4639,16 +4629,6 @@
     "type": "parameter",
     "named": true,
     "fields": {
-      "comptime": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "comptime",
-            "named": false
-          }
-        ]
-      },
       "default": {
         "multiple": false,
         "required": false,
@@ -4775,16 +4755,6 @@
           }
         ]
       },
-      "move": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "move",
-            "named": false
-          }
-        ]
-      },
       "name": {
         "multiple": false,
         "required": true,
@@ -4805,6 +4775,16 @@
           }
         ]
       }
+    },
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "parameter_modifiers",
+          "named": true
+        }
+      ]
     }
   },
   {
@@ -4820,6 +4800,32 @@
           "named": true
         }
       ]
+    }
+  },
+  {
+    "type": "parameter_modifiers",
+    "named": true,
+    "fields": {
+      "comptime": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "comptime",
+            "named": false
+          }
+        ]
+      },
+      "move": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "move",
+            "named": false
+          }
+        ]
+      }
     }
   },
   {

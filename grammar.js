@@ -141,10 +141,9 @@ module.exports = grammar({
     method_receiver: ($) =>
       seq(
         "(",
-        optional(field("comptime", "comptime")),
+        optional($.parameter_modifiers),
         field("name", $.identifier),
         ":",
-        optional(field("move", "move")),
         field("type", $.type),
         ")",
       ),
@@ -161,13 +160,18 @@ module.exports = grammar({
         optional(seq(":", field("constraint", $.constraint_expression))),
       ),
 
+    parameter_modifiers: ($) =>
+      choice(
+        seq(field("comptime", "comptime"), optional(field("move", "move"))),
+        seq(field("move", "move"), optional(field("comptime", "comptime"))),
+      ),
+
     parameter: ($) =>
       seq(
-        optional(field("comptime", "comptime")),
+        optional($.parameter_modifiers),
         field("name", $.identifier),
         ":",
         optional("..."),
-        optional(field("move", "move")),
         field("type", $.type),
         optional(seq("=", field("default", $._expression))),
       ),
@@ -598,7 +602,7 @@ module.exports = grammar({
     function_type_parameter: ($) =>
       choice(
         seq(
-          optional(field("comptime", "comptime")),
+          optional($.parameter_modifiers),
           optional(choice("_", field("name", $.identifier))),
           ":",
           field("type", $.type),
