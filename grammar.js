@@ -66,7 +66,28 @@ module.exports = grammar({
     type_declaration: ($) =>
       seq("type", field("name", $.identifier), field("value", $.type)),
 
-    attribute: ($) => seq("#", "[", field("name", $.identifier), "]"),
+    attribute: ($) =>
+      seq(
+        "#",
+        "[",
+        field("name", $.identifier),
+        optional(
+          seq(
+            "(",
+            optional(
+              commaSep1(
+                choice(
+                  field("string", $.string_literal),
+                  field("arg", $.identifier),
+                ),
+              ),
+            ),
+            optional(","),
+            ")",
+          ),
+        ),
+        "]",
+      ),
 
     function_declaration: ($) =>
       seq(
@@ -392,8 +413,6 @@ module.exports = grammar({
       choice(
         $.error_union_type,
         $.optional_type,
-        $.own_pointer_type,
-        $.raw_pointer_type,
         $.pointer_type,
         $.array_type,
         $.tuple_type,
@@ -408,9 +427,7 @@ module.exports = grammar({
     named_type: ($) => choice($.identifier, $.scoped_identifier),
 
     optional_type: ($) => seq("?", $.type),
-    own_pointer_type: ($) => seq("own", "*", $.type),
-    raw_pointer_type: ($) => seq("raw", "*", optional("mut"), $.type),
-    pointer_type: ($) => seq("*", optional("mut"), $.type),
+    pointer_type: ($) => seq("*", repeat(choice("own", "raw", "mut")), $.type),
     array_type: ($) =>
       seq("[", field("size", $.expression), "]", field("element", $.type)),
     tuple_type: ($) => seq("(", commaSep1($.type), optional(","), ")"),

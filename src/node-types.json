@@ -176,15 +176,7 @@
         "named": true
       },
       {
-        "type": "own_pointer_type",
-        "named": true
-      },
-      {
         "type": "pointer_type",
-        "named": true
-      },
-      {
-        "type": "raw_pointer_type",
         "named": true
       },
       {
@@ -287,12 +279,32 @@
     "type": "attribute",
     "named": true,
     "fields": {
+      "arg": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      },
       "name": {
         "multiple": false,
         "required": true,
         "types": [
           {
             "type": "identifier",
+            "named": true
+          }
+        ]
+      },
+      "string": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": "string_literal",
             "named": true
           }
         ]
@@ -1213,21 +1225,6 @@
     }
   },
   {
-    "type": "own_pointer_type",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "type",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "panic_statement",
     "named": true,
     "fields": {
@@ -1328,21 +1325,6 @@
           }
         ]
       }
-    }
-  },
-  {
-    "type": "raw_pointer_type",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "type",
-          "named": true
-        }
-      ]
     }
   },
   {

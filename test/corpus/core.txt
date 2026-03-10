@@ -288,6 +288,9 @@ Builtin Declarations
 #[builtin]
 fn recover() string;
 
+#[extern("ferret_io_println")]
+fn Println(text string) void;
+
 ---
 
 (source_file
@@ -298,5 +301,18 @@ fn recover() string;
         name: (identifier))
       name: (identifier)
       parameters: (parameter_list)
+      result: (named_type
+        (identifier))))
+  (top_level_item
+    (function_declaration
+      attribute: (attribute
+        name: (identifier)
+        string: (string_literal))
+      name: (identifier)
+      parameters: (parameter_list
+        (parameter
+          name: (identifier)
+          type: (named_type
+            (identifier))))
       result: (named_type
         (identifier)))))
