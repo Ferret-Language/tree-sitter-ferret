@@ -93,9 +93,8 @@ fn (p *mut Point) Shift(dx i32, dy i32) Point {
 Expressions
 ==================
 
-fn Eval(comptime T Type, value T) T {
+unsafe fn Eval(comptime T Type, value T) T {
   let v = comptime value ?? none
-  let w = unsafe value
   let n = 1 as i64
   if value == .{ .x = 1 } {
     return value!! catch value
@@ -132,11 +131,6 @@ fn Eval(comptime T Type, value T) T {
         (let_statement
           (let_clause
             name: (identifier)
-            value: (unsafe_expression
-              value: (identifier))))
-        (let_statement
-          (let_clause
-            name: (identifier)
             value: (cast_expression
               value: (number_literal)
               type: (named_type
@@ -162,65 +156,8 @@ fn Eval(comptime T Type, value T) T {
                   field: (identifier))))))))))
 
 ==================
-Loops And Assignment
-==================
-
-fn Run() i32 {
-  let mut x: i32 = 0
-  while x < 10 {
-    x = x + 1
-    if x == 5 {
-      break
-    }
-    continue
-  }
-  return x
-}
-
----
-
-(source_file
-  (top_level_item
-    (function_declaration
-      name: (identifier)
-      parameters: (parameter_list)
-      result: (named_type
-        (identifier))
-      body: (block
-        (let_statement
-          (let_clause
-            name: (identifier)
-            type: (named_type
-              (identifier))
-            value: (number_literal)))
-        (while_statement
-          condition: (binary_expression
-            left: (identifier)
-            right: (number_literal))
-          body: (block
-            (assignment_statement
-              (assignment_clause
-                left: (identifier)
-                right: (binary_expression
-                  left: (identifier)
-                  right: (number_literal))))
-            (if_statement
-              condition: (binary_expression
-                left: (identifier)
-                right: (number_literal))
-              consequence: (block
-                (break_statement)))
-            (continue_statement)))
-        (return_statement
-          value: (identifier))))))
-
-==================
 For And Control
 ==================
-
-import "json/parser" as json
-
-fn close(m Mutex) void {}
 
 fn Run(m Mutex, items [3]i32) i32 {
   let mut sum: i32 = 0
@@ -230,12 +167,11 @@ fn Run(m Mutex, items [3]i32) i32 {
   }
 
   for items |i, v| {
-    defer close(m)
-    unsafe {
-      lock m as g {
-        panic "boom"
-        continue
-      }
+    defer release m
+    lock m as g {
+      defer release g
+      panic "boom"
+      continue
     }
   }
 
@@ -245,21 +181,6 @@ fn Run(m Mutex, items [3]i32) i32 {
 ---
 
 (source_file
-  (top_level_item
-    (import_declaration
-      path: (string_literal)
-      alias: (identifier)))
-  (top_level_item
-    (function_declaration
-      name: (identifier)
-      parameters: (parameter_list
-        (parameter
-          name: (identifier)
-          type: (named_type
-            (identifier))))
-      result: (named_type
-        (identifier))
-      body: (block)))
   (top_level_item
     (function_declaration
       name: (identifier)
@@ -299,19 +220,18 @@ fn Run(m Mutex, items [3]i32) i32 {
           value: (identifier)
           body: (block
             (defer_statement
-              value: (deferred_call
-                function: (identifier)
-                arguments: (argument_list
-                  (identifier))))
-            (unsafe_statement
+              value: (release_clause
+                value: (identifier)))
+            (lock_statement
+              value: (identifier)
+              name: (identifier)
               body: (block
-                (lock_statement
-                  value: (identifier)
-                  name: (identifier)
-                  body: (block
-                    (panic_statement
-                      value: (string_literal))
-                    (continue_statement)))))))
+                (defer_statement
+                  value: (release_clause
+                    value: (identifier)))
+                (panic_statement
+                  value: (string_literal))
+                (continue_statement)))))
         (return_statement
           value: (identifier))))))
 
@@ -319,7 +239,7 @@ fn Run(m Mutex, items [3]i32) i32 {
 Labels
 ==================
 
-fn Run(items [3]i32) void {
+fn RunLabels(items [3]i32) void {
   outer: for items |v| {
     inner: while ready {
       break outer
@@ -359,3 +279,24 @@ fn Run(items [3]i32) void {
                       label: (identifier)))))
               (continue_statement
                 label: (identifier)))))))))
+
+==================
+Builtin Declarations
+==================
+
+/// Returns the current panic payload as a string.
+#[builtin]
+fn recover() string;
+
+---
+
+(source_file
+  (line_comment)
+  (top_level_item
+    (function_declaration
+      attribute: (attribute
+        name: (identifier))
+      name: (identifier)
+      parameters: (parameter_list)
+      result: (named_type
+        (identifier)))))

@@ -67,6 +67,9 @@
 ["(" ")" "[" "]" "{" "}"] @punctuation.bracket
 ["," ";" ":" "."] @punctuation.delimiter
 
+(attribute
+  name: (identifier) @attribute)
+
 (type_declaration
   name: (identifier) @type)
 

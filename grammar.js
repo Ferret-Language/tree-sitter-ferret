@@ -66,14 +66,18 @@ module.exports = grammar({
     type_declaration: ($) =>
       seq("type", field("name", $.identifier), field("value", $.type)),
 
+    attribute: ($) => seq("#", "[", field("name", $.identifier), "]"),
+
     function_declaration: ($) =>
       seq(
+        repeat(field("attribute", $.attribute)),
+        optional("unsafe"),
         "fn",
         optional(field("receiver", $.receiver)),
         field("name", choice($.identifier, $.destructor_name)),
         field("parameters", $.parameter_list),
         optional(field("result", $.type)),
-        field("body", $.block),
+        choice(field("body", $.block), ";"),
       ),
 
     destructor_name: ($) => seq("~", $.identifier),
@@ -104,6 +108,7 @@ module.exports = grammar({
         $.while_statement,
         $.for_statement,
         $.defer_statement,
+        $.release_statement,
         $.panic_statement,
         $.lock_statement,
         $.unsafe_statement,
@@ -187,7 +192,15 @@ module.exports = grammar({
       ),
 
     defer_statement: ($) =>
-      seq("defer", field("value", $.deferred_call), optional(";")),
+      seq(
+        "defer",
+        field("value", choice($.block, $.release_clause, $.expression)),
+        optional(";"),
+      ),
+
+    release_statement: ($) => seq($.release_clause, optional(";")),
+
+    release_clause: ($) => seq("release", field("value", $.expression)),
 
     panic_statement: ($) =>
       prec.right(
@@ -227,7 +240,6 @@ module.exports = grammar({
       choice(
         $.catch_expression,
         $.binary_expression,
-        $.unsafe_expression,
         $.prefix_expression,
         $.error_propagate_expression,
         $.cast_expression,
@@ -243,9 +255,6 @@ module.exports = grammar({
         $.boolean_literal,
         $.none_literal,
       ),
-
-    unsafe_expression: ($) =>
-      prec.right(PREC.prefix, seq("unsafe", field("value", $.expression))),
 
     parenthesized_expression: ($) => seq("(", $.expression, ")"),
 
@@ -285,9 +294,6 @@ module.exports = grammar({
 
     argument_list: ($) =>
       seq("(", optional(commaSep1($.expression)), optional(","), ")"),
-
-    deferred_call: ($) =>
-      seq(field("function", $.expression), field("arguments", $.argument_list)),
 
     selector_expression: ($) =>
       prec.left(
