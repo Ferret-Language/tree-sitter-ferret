@@ -1,0 +1,60 @@
+
+import "std/io";
+
+type Int i32;
+
+type Point struct {
+    .X: i32,
+    .Y: i32
+};
+
+fn (p: &Point) Print() {
+    const fmt := "{.X = {}, .Y = {}}\n";
+    io::Printf(fmt, p.X, p.Y);
+}
+
+type Node<T> struct {
+    .Data: i32,
+    .Next: ?&Node<T>
+};
+
+fn mayerror(err: bool) -> str ! i32 {
+    if err {
+        return "error"!;
+    }
+    
+    return 90;
+}
+
+fn useerr() -> str!i32 {
+    let res := mayerror(true)!!;
+    
+    io::Println("Done");
+    return res;
+} 
+
+fn main() -> !void {
+    let val: Int = 10; // stack
+    let p: Point = { .X = 10, .Y = 10 }; // stack
+    
+    p.Print();
+
+    let n0: &own Node<i32> = alloc({ .Data = 10, .Next = none } as Node<i32>);
+    let n1: &own Node<i32> = alloc({ .Data = 20, .Next = n0 } as Node<i32>);
+
+    let temp : ?&Node<i32> = n1;
+
+    while temp != none {
+        io::Println(temp.Data);
+        temp = temp.Next;
+    }
+    
+    io::Println("-------------");
+
+    let vals := useerr();
+    let valerr := vals catch err {
+        io::Println(err);
+        return;
+    };
+    io::Println();
+}

@@ -1,0 +1,49 @@
+{
+  "name": "tree-sitter-ferret",
+  "version": "0.1.0",
+  "description": "Tree-sitter grammar for the current Ferret language revision",
+  "main": "bindings/node",
+  "types": "bindings/node",
+  "keywords": [
+    "tree-sitter",
+    "parser",
+    "ferret",
+    "syntax"
+  ],
+  "author": "itsfuad",
+  "license": "MIT",
+  "devDependencies": {
+    "tree-sitter-cli": "^0.25.10"
+  },
+  "optionalDependencies": {
+    "nan": "^2.17.0"
+  },
+  "tree-sitter": [
+    {
+      "scope": "source.ferret",
+      "file-types": [
+        "ferr"
+      ],
+      "injection-regex": "^ferret$",
+      "highlights": [
+        "queries/highlights.scm"
+      ]
+    }
+  ],
+  "files": [
+    "grammar.js",
+    "binding.gyp",
+    "bindings/node/*",
+    "queries/*",
+    "src/**"
+  ],
+  "scripts": {
+    "generate": "tree-sitter generate",
+    "test": "tree-sitter test",
+    "parse": "tree-sitter parse"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Ferret-Language/tree-sitter-ferret.git"
+  }
+}

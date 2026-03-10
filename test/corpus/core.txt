@@ -1,0 +1,131 @@
+==================
+Core Declarations
+==================
+
+import "math::complex";
+const BuildMode = "debug"
+
+type Point copy struct {
+  x i32 = 0
+  y i32 = 0
+}
+
+fn (p *mut Point) Shift(dx i32, dy i32) Point {
+  let mut next: Point = .{ .x = dx, .y = dy }
+  return next
+}
+
+---
+
+(source_file
+  (top_level_item
+    (import_declaration
+      path: (string_literal)))
+  (top_level_item
+    (const_declaration
+      name: (identifier)
+      value: (string_literal)))
+  (top_level_item
+    (type_declaration
+      name: (identifier)
+      value: (struct_type
+        (field_declaration
+          name: (identifier)
+          type: (named_type
+            (identifier))
+          value: (number_literal))
+        (field_declaration
+          name: (identifier)
+          type: (named_type
+            (identifier))
+          value: (number_literal)))))
+  (top_level_item
+    (function_declaration
+      receiver: (receiver
+        name: (identifier)
+        type: (pointer_type
+          (named_type
+            (identifier))))
+      name: (identifier)
+      parameters: (parameter_list
+        (parameter
+          name: (identifier)
+          type: (named_type
+            (identifier)))
+        (parameter
+          name: (identifier)
+          type: (named_type
+            (identifier))))
+      result: (named_type
+        (identifier))
+      body: (block
+        (let_statement
+          name: (identifier)
+          type: (named_type
+            (identifier))
+          value: (composite_literal
+            (named_field_initializer
+              name: (identifier)
+              value: (identifier))
+            (named_field_initializer
+              name: (identifier)
+              value: (identifier))))
+        (return_statement
+          value: (identifier))))))
+
+==================
+Expressions
+==================
+
+fn Eval(comptime T Type, value T) T {
+  let v = comptime value ?? none
+  if value == .{ .x = 1 } {
+    return value!! catch value
+  } else {
+    return &mut value.x
+  }
+}
+
+---
+
+(source_file
+  (top_level_item
+    (function_declaration
+      name: (identifier)
+      parameters: (parameter_list
+        (parameter
+          name: (identifier)
+          type: (named_type
+            (identifier)))
+        (parameter
+          name: (identifier)
+          type: (named_type
+            (identifier))))
+      result: (named_type
+        (identifier))
+      body: (block
+        (let_statement
+          name: (identifier)
+          value: (binary_expression
+            left: (prefix_expression
+              value: (identifier))
+            right: (none_literal)))
+        (if_statement
+          condition: (binary_expression
+            left: (identifier)
+            right: (composite_literal
+              (named_field_initializer
+                name: (identifier)
+                value: (number_literal))))
+          consequence: (block
+            (return_statement
+              value: (binary_expression
+                left: (error_propagate_expression
+                  value: (identifier))
+                right: (identifier))))
+          alternative: (block
+            (return_statement
+              value: (prefix_expression
+                value: (selector_expression
+                  value: (identifier)
+                  field: (identifier))))))))))
