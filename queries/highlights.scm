@@ -23,6 +23,10 @@
   "else"
   "switch"
   "case"
+  "for"
+  "while"
+  "break"
+  "continue"
   "return"
   "static"
   "own"
@@ -30,6 +34,11 @@
   "comptime"
   "take"
   "catch"
+  "as"
+  "defer"
+  "panic"
+  "lock"
+  "unsafe"
 ] @keyword
 
 [
@@ -109,16 +118,22 @@
 (receiver
   name: (identifier) @variable.parameter)
 
-(let_statement
+(labeled_statement
+  label: (identifier) @label)
+
+(let_clause
   name: (identifier) @variable)
 
-(const_statement
+(const_clause
   name: (identifier) @constant)
 
 (const_declaration
   name: (identifier) @constant)
 
 (field_declaration
+  name: (identifier) @property)
+
+(static_field_declaration
   name: (identifier) @property)
 
 (named_field_initializer

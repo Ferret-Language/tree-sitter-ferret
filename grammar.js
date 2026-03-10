@@ -35,6 +35,7 @@ module.exports = grammar({
     top_level_item: ($) =>
       choice(
         $.import_declaration,
+        $.let_declaration,
         $.const_declaration,
         $.type_declaration,
         $.function_declaration,
@@ -47,8 +48,11 @@ module.exports = grammar({
           "path",
           choice($.string_literal, $.identifier, $.scoped_identifier),
         ),
+        optional(seq("as", field("alias", $.identifier))),
         optional(";"),
       ),
+
+    let_declaration: ($) => seq($.let_clause, optional(";")),
 
     const_declaration: ($) =>
       seq(
@@ -60,12 +64,7 @@ module.exports = grammar({
       ),
 
     type_declaration: ($) =>
-      seq(
-        "type",
-        field("name", $.identifier),
-        optional("copy"),
-        field("value", $.type),
-      ),
+      seq("type", field("name", $.identifier), field("value", $.type)),
 
     function_declaration: ($) =>
       seq(
@@ -96,31 +95,48 @@ module.exports = grammar({
 
     statement: ($) =>
       choice(
+        $.labeled_statement,
         $.let_statement,
         $.const_statement,
         $.return_statement,
         $.if_statement,
         $.switch_statement,
+        $.while_statement,
+        $.for_statement,
+        $.defer_statement,
+        $.panic_statement,
+        $.lock_statement,
+        $.unsafe_statement,
+        $.break_statement,
+        $.continue_statement,
+        $.assignment_statement,
         $.expression_statement,
       ),
 
-    let_statement: ($) =>
+    labeled_statement: ($) =>
+      prec.right(
+        seq(field("label", $.identifier), ":", field("statement", $.statement)),
+      ),
+
+    let_statement: ($) => seq($.let_clause, optional(";")),
+
+    let_clause: ($) =>
       seq(
         "let",
         optional("mut"),
         field("name", $.identifier),
         optional(seq(":", field("type", $.type))),
         optional(seq("=", field("value", $.expression))),
-        optional(";"),
       ),
 
-    const_statement: ($) =>
+    const_statement: ($) => seq($.const_clause, optional(";")),
+
+    const_clause: ($) =>
       seq(
         "const",
         field("name", $.identifier),
         optional(seq(":", field("type", $.type))),
         optional(seq("=", field("value", $.expression))),
-        optional(";"),
       ),
 
     return_statement: ($) =>
@@ -150,13 +166,71 @@ module.exports = grammar({
     switch_case: ($) =>
       seq("case", field("value", $.expression), field("body", $.block)),
 
+    while_statement: ($) =>
+      seq("while", field("condition", $.expression), field("body", $.block)),
+
+    for_statement: ($) =>
+      seq(
+        "for",
+        field("iterable", $.expression),
+        "|",
+        choice(
+          seq(field("value", $.identifier), "|"),
+          seq(
+            field("index", $.identifier),
+            ",",
+            field("value", $.identifier),
+            "|",
+          ),
+        ),
+        field("body", $.block),
+      ),
+
+    defer_statement: ($) =>
+      seq("defer", field("value", $.deferred_call), optional(";")),
+
+    panic_statement: ($) =>
+      prec.right(
+        PREC.prefix + 1,
+        seq("panic", field("value", $.expression), optional(";")),
+      ),
+
+    lock_statement: ($) =>
+      seq(
+        "lock",
+        field("value", $.expression),
+        "as",
+        field("name", $.identifier),
+        field("body", $.block),
+      ),
+
+    unsafe_statement: ($) => seq("unsafe", field("body", $.block)),
+
+    break_statement: ($) =>
+      prec.right(
+        seq("break", optional(field("label", $.identifier)), optional(";")),
+      ),
+
+    continue_statement: ($) =>
+      prec.right(
+        seq("continue", optional(field("label", $.identifier)), optional(";")),
+      ),
+
+    assignment_statement: ($) => seq($.assignment_clause, optional(";")),
+
+    assignment_clause: ($) =>
+      seq(field("left", $.expression), "=", field("right", $.expression)),
+
     expression_statement: ($) => seq($.expression, optional(";")),
 
     expression: ($) =>
       choice(
+        $.catch_expression,
         $.binary_expression,
+        $.unsafe_expression,
         $.prefix_expression,
         $.error_propagate_expression,
+        $.cast_expression,
         $.selector_expression,
         $.generic_call_expression,
         $.call_expression,
@@ -169,6 +243,9 @@ module.exports = grammar({
         $.boolean_literal,
         $.none_literal,
       ),
+
+    unsafe_expression: ($) =>
+      prec.right(PREC.prefix, seq("unsafe", field("value", $.expression))),
 
     parenthesized_expression: ($) => seq("(", $.expression, ")"),
 
@@ -209,6 +286,9 @@ module.exports = grammar({
     argument_list: ($) =>
       seq("(", optional(commaSep1($.expression)), optional(","), ")"),
 
+    deferred_call: ($) =>
+      seq(field("function", $.expression), field("arguments", $.argument_list)),
+
     selector_expression: ($) =>
       prec.left(
         PREC.postfix,
@@ -218,28 +298,44 @@ module.exports = grammar({
     error_propagate_expression: ($) =>
       prec.left(PREC.postfix, seq(field("value", $.expression), "!!")),
 
+    cast_expression: ($) =>
+      prec.left(
+        PREC.postfix,
+        seq(field("value", $.expression), "as", field("type", $.type)),
+      ),
+
     prefix_expression: ($) =>
       prec.right(
         PREC.prefix,
         choice(
           seq("&", optional("mut"), field("value", $.expression)),
           seq(
-            choice("*", "-", "!", "?", "take", "comptime"),
+            choice("*", "-", "!", "?", "take", "comptime", "copy"),
             field("value", $.expression),
+          ),
+        ),
+      ),
+
+    catch_expression: ($) =>
+      prec.left(
+        PREC.catch,
+        seq(
+          field("left", $.expression),
+          "catch",
+          choice(
+            field("fallback", $.expression),
+            seq(
+              "|",
+              field("payload", $.identifier),
+              "|",
+              field("handler", $.block),
+            ),
           ),
         ),
       ),
 
     binary_expression: ($) =>
       choice(
-        prec.left(
-          PREC.catch,
-          seq(
-            field("left", $.expression),
-            "catch",
-            field("right", $.expression),
-          ),
-        ),
         prec.left(
           PREC.coalesce,
           seq(field("left", $.expression), "??", field("right", $.expression)),
@@ -318,10 +414,23 @@ module.exports = grammar({
         seq(field("error", $.named_type), "!", field("value", $.type)),
       ),
 
-    struct_type: ($) => seq("struct", "{", repeat($.field_declaration), "}"),
+    struct_type: ($) =>
+      seq(
+        "struct",
+        "{",
+        repeat(choice($.field_declaration, $.static_field_declaration)),
+        "}",
+      ),
     field_declaration: ($) =>
       seq(
-        optional("static"),
+        field("name", $.identifier),
+        field("type", $.type),
+        optional(seq("=", field("value", $.expression))),
+        optional(";"),
+      ),
+    static_field_declaration: ($) =>
+      seq(
+        "static",
         field("name", $.identifier),
         field("type", $.type),
         optional(seq("=", field("value", $.expression))),

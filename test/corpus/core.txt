@@ -3,16 +3,18 @@ Core Declarations
 ==================
 
 import "math::complex";
+let mut GlobalCount: i32 = 0
 const BuildMode = "debug"
 
-type Point copy struct {
+type Point struct {
   x i32 = 0
   y i32 = 0
+  static origin Point = .{}
 }
 
 fn (p *mut Point) Shift(dx i32, dy i32) Point {
   let mut next: Point = .{ .x = dx, .y = dy }
-  return next
+  return copy next
 }
 
 ---
@@ -21,6 +23,13 @@ fn (p *mut Point) Shift(dx i32, dy i32) Point {
   (top_level_item
     (import_declaration
       path: (string_literal)))
+  (top_level_item
+    (let_declaration
+      (let_clause
+        name: (identifier)
+        type: (named_type
+          (identifier))
+        value: (number_literal))))
   (top_level_item
     (const_declaration
       name: (identifier)
@@ -38,7 +47,12 @@ fn (p *mut Point) Shift(dx i32, dy i32) Point {
           name: (identifier)
           type: (named_type
             (identifier))
-          value: (number_literal)))))
+          value: (number_literal))
+        (static_field_declaration
+          name: (identifier)
+          type: (named_type
+            (identifier))
+          value: (composite_literal)))))
   (top_level_item
     (function_declaration
       receiver: (receiver
@@ -60,18 +74,20 @@ fn (p *mut Point) Shift(dx i32, dy i32) Point {
         (identifier))
       body: (block
         (let_statement
-          name: (identifier)
-          type: (named_type
-            (identifier))
-          value: (composite_literal
-            (named_field_initializer
-              name: (identifier)
-              value: (identifier))
-            (named_field_initializer
-              name: (identifier)
-              value: (identifier))))
+          (let_clause
+            name: (identifier)
+            type: (named_type
+              (identifier))
+            value: (composite_literal
+              (named_field_initializer
+                name: (identifier)
+                value: (identifier))
+              (named_field_initializer
+                name: (identifier)
+                value: (identifier)))))
         (return_statement
-          value: (identifier))))))
+          value: (prefix_expression
+            value: (identifier)))))))
 
 ==================
 Expressions
@@ -79,6 +95,8 @@ Expressions
 
 fn Eval(comptime T Type, value T) T {
   let v = comptime value ?? none
+  let w = unsafe value
+  let n = 1 as i64
   if value == .{ .x = 1 } {
     return value!! catch value
   } else {
@@ -105,11 +123,24 @@ fn Eval(comptime T Type, value T) T {
         (identifier))
       body: (block
         (let_statement
-          name: (identifier)
-          value: (binary_expression
-            left: (prefix_expression
-              value: (identifier))
-            right: (none_literal)))
+          (let_clause
+            name: (identifier)
+            value: (binary_expression
+              left: (prefix_expression
+                value: (identifier))
+              right: (none_literal))))
+        (let_statement
+          (let_clause
+            name: (identifier)
+            value: (unsafe_expression
+              value: (identifier))))
+        (let_statement
+          (let_clause
+            name: (identifier)
+            value: (cast_expression
+              value: (number_literal)
+              type: (named_type
+                (identifier)))))
         (if_statement
           condition: (binary_expression
             left: (identifier)
@@ -119,13 +150,212 @@ fn Eval(comptime T Type, value T) T {
                 value: (number_literal))))
           consequence: (block
             (return_statement
-              value: (binary_expression
+              value: (catch_expression
                 left: (error_propagate_expression
                   value: (identifier))
-                right: (identifier))))
+                fallback: (identifier))))
           alternative: (block
             (return_statement
               value: (prefix_expression
                 value: (selector_expression
                   value: (identifier)
                   field: (identifier))))))))))
+
+==================
+Loops And Assignment
+==================
+
+fn Run() i32 {
+  let mut x: i32 = 0
+  while x < 10 {
+    x = x + 1
+    if x == 5 {
+      break
+    }
+    continue
+  }
+  return x
+}
+
+---
+
+(source_file
+  (top_level_item
+    (function_declaration
+      name: (identifier)
+      parameters: (parameter_list)
+      result: (named_type
+        (identifier))
+      body: (block
+        (let_statement
+          (let_clause
+            name: (identifier)
+            type: (named_type
+              (identifier))
+            value: (number_literal)))
+        (while_statement
+          condition: (binary_expression
+            left: (identifier)
+            right: (number_literal))
+          body: (block
+            (assignment_statement
+              (assignment_clause
+                left: (identifier)
+                right: (binary_expression
+                  left: (identifier)
+                  right: (number_literal))))
+            (if_statement
+              condition: (binary_expression
+                left: (identifier)
+                right: (number_literal))
+              consequence: (block
+                (break_statement)))
+            (continue_statement)))
+        (return_statement
+          value: (identifier))))))
+
+==================
+For And Control
+==================
+
+import "json/parser" as json
+
+fn close(m Mutex) void {}
+
+fn Run(m Mutex, items [3]i32) i32 {
+  let mut sum: i32 = 0
+
+  for items |v| {
+    sum = sum + v
+  }
+
+  for items |i, v| {
+    defer close(m)
+    unsafe {
+      lock m as g {
+        panic "boom"
+        continue
+      }
+    }
+  }
+
+  return sum
+}
+
+---
+
+(source_file
+  (top_level_item
+    (import_declaration
+      path: (string_literal)
+      alias: (identifier)))
+  (top_level_item
+    (function_declaration
+      name: (identifier)
+      parameters: (parameter_list
+        (parameter
+          name: (identifier)
+          type: (named_type
+            (identifier))))
+      result: (named_type
+        (identifier))
+      body: (block)))
+  (top_level_item
+    (function_declaration
+      name: (identifier)
+      parameters: (parameter_list
+        (parameter
+          name: (identifier)
+          type: (named_type
+            (identifier)))
+        (parameter
+          name: (identifier)
+          type: (array_type
+            size: (number_literal)
+            element: (named_type
+              (identifier)))))
+      result: (named_type
+        (identifier))
+      body: (block
+        (let_statement
+          (let_clause
+            name: (identifier)
+            type: (named_type
+              (identifier))
+            value: (number_literal)))
+        (for_statement
+          iterable: (identifier)
+          value: (identifier)
+          body: (block
+            (assignment_statement
+              (assignment_clause
+                left: (identifier)
+                right: (binary_expression
+                  left: (identifier)
+                  right: (identifier))))))
+        (for_statement
+          iterable: (identifier)
+          index: (identifier)
+          value: (identifier)
+          body: (block
+            (defer_statement
+              value: (deferred_call
+                function: (identifier)
+                arguments: (argument_list
+                  (identifier))))
+            (unsafe_statement
+              body: (block
+                (lock_statement
+                  value: (identifier)
+                  name: (identifier)
+                  body: (block
+                    (panic_statement
+                      value: (string_literal))
+                    (continue_statement)))))))
+        (return_statement
+          value: (identifier))))))
+
+==================
+Labels
+==================
+
+fn Run(items [3]i32) void {
+  outer: for items |v| {
+    inner: while ready {
+      break outer
+    }
+    continue outer
+  }
+}
+
+---
+
+(source_file
+  (top_level_item
+    (function_declaration
+      name: (identifier)
+      parameters: (parameter_list
+        (parameter
+          name: (identifier)
+          type: (array_type
+            size: (number_literal)
+            element: (named_type
+              (identifier)))))
+      result: (named_type
+        (identifier))
+      body: (block
+        (labeled_statement
+          label: (identifier)
+          statement: (for_statement
+            iterable: (identifier)
+            value: (identifier)
+            body: (block
+              (labeled_statement
+                label: (identifier)
+                statement: (while_statement
+                  condition: (identifier)
+                  body: (block
+                    (break_statement
+                      label: (identifier)))))
+              (continue_statement
+                label: (identifier)))))))))
