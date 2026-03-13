@@ -12,6 +12,12 @@ type Point struct {
   static origin Point = .{}
 }
 
+#[if(target_os, "linux")]
+type Handle move enum {
+  stdin,
+  stdout,
+}
+
 fn (p *mut Point) Shift(dx i32, dy i32) Point {
   let mut next: Point = .{ .x = dx, .y = dy }
   return copy next
@@ -53,6 +59,17 @@ fn (p *mut Point) Shift(dx i32, dy i32) Point {
           type: (named_type
             (identifier))
           value: (composite_literal)))))
+  (top_level_item
+    attribute: (attribute
+      name: (identifier)
+      arg: (identifier)
+      string: (string_literal))
+    (type_declaration
+      name: (identifier)
+      (move)
+      value: (enum_type
+        (identifier)
+        (identifier))))
   (top_level_item
     (function_declaration
       receiver: (receiver
@@ -232,6 +249,52 @@ fn Run(m Mutex, items [3]i32) i32 {
                 (panic_statement
                   value: (string_literal))
                 (continue_statement)))))
+        (return_statement
+          value: (identifier))))))
+
+==================
+Match Expressions
+==================
+
+fn Check(value ?i32) i32 {
+  let out: i32 = match value {
+    is i32 => value
+    _ => -1
+  }
+  return out
+}
+
+---
+
+(source_file
+  (top_level_item
+    (function_declaration
+      name: (identifier)
+      parameters: (parameter_list
+        (parameter
+          name: (identifier)
+          type: (optional_type
+            (named_type
+              (identifier)))))
+      result: (named_type
+        (identifier))
+      body: (block
+        (let_statement
+          (let_clause
+            name: (identifier)
+            type: (named_type
+              (identifier))
+            value: (match_expression
+              value: (identifier)
+              (match_arm
+                pattern: (match_pattern
+                  type: (named_type
+                    (identifier)))
+                body: (identifier))
+              (match_arm
+                pattern: (match_pattern)
+                body: (prefix_expression
+                  value: (number_literal))))))
         (return_statement
           value: (identifier))))))
 

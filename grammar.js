@@ -35,9 +35,9 @@ module.exports = grammar({
     top_level_item: ($) =>
       choice(
         $.import_declaration,
-        $.let_declaration,
-        $.const_declaration,
-        $.type_declaration,
+        seq(repeat(field("attribute", $.attribute)), $.let_declaration),
+        seq(repeat(field("attribute", $.attribute)), $.const_declaration),
+        seq(repeat(field("attribute", $.attribute)), $.type_declaration),
         $.function_declaration,
       ),
 
@@ -64,7 +64,12 @@ module.exports = grammar({
       ),
 
     type_declaration: ($) =>
-      seq("type", field("name", $.identifier), field("value", $.type)),
+      seq(
+        "type",
+        field("name", $.identifier),
+        optional($.move),
+        field("value", $._declared_type),
+      ),
 
     attribute: ($) =>
       seq(
@@ -125,7 +130,6 @@ module.exports = grammar({
         $.const_statement,
         $.return_statement,
         $.if_statement,
-        $.switch_statement,
         $.while_statement,
         $.for_statement,
         $.defer_statement,
@@ -180,17 +184,18 @@ module.exports = grammar({
         ),
       ),
 
-    switch_statement: ($) =>
+    match_expression: ($) =>
+      seq("match", field("value", $.expression), "{", repeat($.match_arm), "}"),
+
+    match_arm: ($) =>
       seq(
-        "switch",
-        field("value", $.expression),
-        "{",
-        repeat($.switch_case),
-        "}",
+        field("pattern", $.match_pattern),
+        "=>",
+        field("body", choice($.block, $.expression)),
       ),
 
-    switch_case: ($) =>
-      seq("case", field("value", $.expression), field("body", $.block)),
+    match_pattern: ($) =>
+      choice("_", seq("is", field("type", $.type)), $.expression),
 
     while_statement: ($) =>
       seq("while", field("condition", $.expression), field("body", $.block)),
@@ -259,6 +264,7 @@ module.exports = grammar({
 
     expression: ($) =>
       choice(
+        $.match_expression,
         $.catch_expression,
         $.binary_expression,
         $.prefix_expression,
@@ -423,6 +429,17 @@ module.exports = grammar({
         $.error_type,
         $.named_type,
       ),
+
+    _declared_type: ($) =>
+      choice(
+        $.struct_type,
+        $.interface_type,
+        $.enum_type,
+        $.union_type,
+        $.error_type,
+      ),
+
+    move: () => "move",
 
     named_type: ($) => choice($.identifier, $.scoped_identifier),
 

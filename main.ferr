@@ -1,0 +1,23 @@
+import "std/math"
+import "std/io"
+
+type Point struct {
+    X i32
+    Y i32
+}
+
+fn (p *mut Point) Incrby(dx i32, dy i32) {
+    if dx < 0 {
+        panic "negative dx not allowed"
+    }
+    p.X = p.X + dx
+    p.Y = p.Y + dy
+}
+
+fn main() f32 {
+    let mut p: Point = .{ .X = 1, .Y = 2 }
+    p.Incrby(3, 4)
+    //p = "hi"
+    io::Println("Hello world!")
+    return math::Rand()
+}

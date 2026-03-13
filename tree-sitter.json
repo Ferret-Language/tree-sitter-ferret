@@ -1,0 +1,41 @@
+{
+  "$schema": "https://tree-sitter.github.io/tree-sitter/assets/schemas/config.schema.json",
+  "grammars": [
+    {
+      "name": "ferret",
+      "camelcase": "Ferret",
+      "title": "Ferret",
+      "scope": "source.ferret",
+      "file-types": [
+        "ferret",
+        "ferr"
+      ],
+      "injection-regex": "^ferret$",
+      "class-name": "TreeSitterFerret"
+    }
+  ],
+  "metadata": {
+    "version": "0.1.0",
+    "license": "MIT",
+    "description": "Ferret Programming Language tree-sitter grammar",
+    "authors": [
+      {
+        "name": "Fuad Hasan",
+        "email": "fuad.cs22@gmail.com",
+        "url": "https://itsfuad.com/"
+      }
+    ],
+    "links": {
+      "repository": "https://github.com/Ferret-Language/tree-sitter-ferret"
+    }
+  },
+  "bindings": {
+    "c": true,
+    "go": true,
+    "node": true,
+    "python": true,
+    "rust": true,
+    "swift": true,
+    "zig": false
+  }
+}

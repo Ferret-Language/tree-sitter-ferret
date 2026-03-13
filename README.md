@@ -13,7 +13,7 @@ This grammar targets the new Ferret syntax in this repo, not the older Ferret co
 - `let` / `let mut`
 - local `const`
 - `if` / `else`
-- `switch` / `case`
+- `match`
 - pointers, optionals, error unions
 - Zig-style `.{ ... }` literals
 - `comptime` parameters and prefix expressions
