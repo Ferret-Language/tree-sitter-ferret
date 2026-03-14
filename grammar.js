@@ -67,7 +67,7 @@ module.exports = grammar({
       seq(
         "type",
         field("name", $.identifier),
-        optional("move"),
+        optional($.move),
         field("value", $._declared_type),
       ),
 
@@ -438,6 +438,8 @@ module.exports = grammar({
         $.union_type,
         $.error_type,
       ),
+
+    move: () => "move",
 
     named_type: ($) => choice($.identifier, $.scoped_identifier),
 

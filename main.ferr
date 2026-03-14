@@ -6,6 +6,10 @@ type Point struct {
     Y i32
 }
 
+type Movable move struct {
+    Item i32
+}
+
 fn (p *mut Point) Incrby(dx i32, dy i32) {
     if dx < 0 {
         panic "negative dx not allowed"
