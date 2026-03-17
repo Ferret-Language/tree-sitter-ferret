@@ -99,26 +99,44 @@ module.exports = grammar({
         repeat(field("attribute", $.attribute)),
         optional("unsafe"),
         "fn",
-        optional(field("receiver", $.receiver)),
-        field("name", choice($.identifier, $.destructor_name)),
+        choice(
+          field("name", $.identifier),
+          seq(
+            field("owner", choice($.identifier, $.scoped_identifier)),
+            "::",
+            field("name", $.identifier),
+          ),
+        ),
         field("parameters", $.parameter_list),
         optional(field("result", $.type)),
         choice(field("body", $.block), ";"),
       ),
 
-    destructor_name: ($) => seq("~", $.identifier),
-
-    receiver: ($) =>
-      seq("(", field("name", $.identifier), field("type", $.type), ")"),
-
     parameter_list: ($) =>
       seq("(", optional(commaSep1($.parameter)), optional(","), ")"),
 
-    parameter: ($) =>
+    parameter: ($) => choice($.self_parameter, $.typed_parameter),
+
+    typed_parameter: ($) =>
       seq(
         optional("comptime"),
+        optional("mut"),
         field("name", $.identifier),
+        ":",
         field("type", $.type),
+      ),
+
+    self_parameter: ($) =>
+      seq(
+        optional("comptime"),
+        optional("mut"),
+        choice(
+          "self",
+          seq("self", ":", field("type", $.type)),
+          seq("&", "self"),
+          seq("&", "mut", "self"),
+          seq("*", "self"),
+        ),
       ),
 
     block: ($) => seq("{", repeat($.statement), "}"),
@@ -420,6 +438,8 @@ module.exports = grammar({
         $.error_union_type,
         $.optional_type,
         $.pointer_type,
+        $.ref_type,
+        $.raw_pointer_type,
         $.array_type,
         $.tuple_type,
         $.struct_type,
@@ -444,7 +464,9 @@ module.exports = grammar({
     named_type: ($) => choice($.identifier, $.scoped_identifier),
 
     optional_type: ($) => seq("?", $.type),
-    pointer_type: ($) => seq("*", repeat(choice("own", "raw", "mut")), $.type),
+    pointer_type: ($) => seq("*", $.type),
+    ref_type: ($) => seq("&", optional("mut"), $.type),
+    raw_pointer_type: ($) => seq("^", $.type),
     array_type: ($) =>
       seq("[", field("size", $.expression), "]", field("element", $.type)),
     tuple_type: ($) => seq("(", commaSep1($.type), optional(","), ")"),
@@ -454,24 +476,11 @@ module.exports = grammar({
         seq(field("error", $.named_type), "!", field("value", $.type)),
       ),
 
-    struct_type: ($) =>
-      seq(
-        "struct",
-        "{",
-        repeat(choice($.field_declaration, $.static_field_declaration)),
-        "}",
-      ),
+    struct_type: ($) => seq("struct", "{", repeat($.field_declaration), "}"),
     field_declaration: ($) =>
       seq(
         field("name", $.identifier),
-        field("type", $.type),
-        optional(seq("=", field("value", $.expression))),
-        optional(";"),
-      ),
-    static_field_declaration: ($) =>
-      seq(
-        "static",
-        field("name", $.identifier),
+        ":",
         field("type", $.type),
         optional(seq("=", field("value", $.expression))),
         optional(";"),

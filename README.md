@@ -9,12 +9,12 @@ This grammar targets the new Ferret syntax in this repo, not the older Ferret co
 - imports
 - top-level `const`
 - `type` declarations
-- external methods with receivers
+- attached methods with `Type::Method(...)`
 - `let` / `let mut`
 - local `const`
 - `if` / `else`
 - `match`
-- pointers, optionals, error unions
+- owning pointers, references, raw pointers, optionals, error unions
 - Zig-style `.{ ... }` literals
 - `comptime` parameters and prefix expressions
 - `!!`, `??`, `catch`
