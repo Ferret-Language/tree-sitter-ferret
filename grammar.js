@@ -29,6 +29,13 @@ module.exports = grammar({
 
   supertypes: ($) => [$.statement, $.expression, $.type],
 
+  conflicts: ($) => [
+    [$.expression, $.named_type],
+    [$.expression, $.generic_type],
+    [$.array_literal, $.array_type],
+    [$.named_type, $.generic_type],
+  ],
+
   rules: {
     source_file: ($) => repeat($.top_level_item),
 
@@ -37,6 +44,7 @@ module.exports = grammar({
         $.import_declaration,
         seq(repeat(field("attribute", $.attribute)), $.let_declaration),
         seq(repeat(field("attribute", $.attribute)), $.const_declaration),
+        seq(repeat(field("attribute", $.attribute)), $.constraint_declaration),
         seq(repeat(field("attribute", $.attribute)), $.type_declaration),
         $.function_declaration,
       ),
@@ -63,12 +71,23 @@ module.exports = grammar({
         optional(";"),
       ),
 
+    constraint_declaration: ($) =>
+      seq(
+        "constraint",
+        field("name", $.identifier),
+        optional(field("type_parameters", $.type_parameter_list)),
+        "=",
+        field("value", $.constraint_expression),
+        optional(";"),
+      ),
+
     type_declaration: ($) =>
       seq(
         "type",
         field("name", $.identifier),
+        optional(field("type_parameters", $.type_parameter_list)),
         optional($.move),
-        field("value", $._declared_type),
+        field("value", $.type),
       ),
 
     attribute: ($) =>
@@ -107,9 +126,40 @@ module.exports = grammar({
             field("name", $.identifier),
           ),
         ),
+        optional(field("type_parameters", $.type_parameter_list)),
         field("parameters", $.parameter_list),
         optional(field("result", $.type)),
         choice(field("body", $.block), ";"),
+      ),
+
+    type_parameter_list: ($) =>
+      seq("<", commaSep1($.type_parameter), optional(","), ">"),
+
+    type_parameter: ($) =>
+      seq(
+        field("name", $.identifier),
+        optional(seq(":", field("constraint", $.constraint_expression))),
+      ),
+
+    constraint_expression: ($) =>
+      choice(
+        $.constraint_term,
+        prec.left(
+          seq(
+            field("left", $.constraint_term),
+            repeat1(seq("&", field("right", $.constraint_term))),
+          ),
+        ),
+      ),
+
+    constraint_term: ($) =>
+      choice(
+        $.interface_type,
+        $.union_type,
+        $.generic_type,
+        $.approx_type,
+        $.named_type,
+        seq("(", $.constraint_expression, ")"),
       ),
 
     parameter_list: ($) =>
@@ -286,12 +336,15 @@ module.exports = grammar({
         $.catch_expression,
         $.binary_expression,
         $.prefix_expression,
+        $.postfix_expression,
         $.error_propagate_expression,
         $.cast_expression,
+        $.index_expression,
         $.selector_expression,
         $.generic_call_expression,
         $.call_expression,
         $.parenthesized_expression,
+        $.array_literal,
         $.composite_literal,
         $.identifier,
         $.scoped_identifier,
@@ -303,9 +356,13 @@ module.exports = grammar({
 
     parenthesized_expression: ($) => seq("(", $.expression, ")"),
 
+    array_literal: ($) =>
+      seq("[", optional(commaSep1($.expression)), optional(","), "]"),
+
     composite_literal: ($) =>
       seq(
         ".",
+        optional(field("type", $.named_type)),
         "{",
         optional(commaSep1(choice($.named_field_initializer, $.expression))),
         optional(","),
@@ -346,8 +403,28 @@ module.exports = grammar({
         seq(field("value", $.expression), ".", field("field", $.identifier)),
       ),
 
+    index_expression: ($) =>
+      prec.left(
+        PREC.postfix,
+        seq(
+          field("value", $.expression),
+          "[",
+          field("index", $.expression),
+          "]",
+        ),
+      ),
+
     error_propagate_expression: ($) =>
       prec.left(PREC.postfix, seq(field("value", $.expression), "!!")),
+
+    postfix_expression: ($) =>
+      prec.left(
+        PREC.postfix,
+        seq(
+          field("value", $.expression),
+          field("operator", choice("++", "--")),
+        ),
+      ),
 
     cast_expression: ($) =>
       prec.left(
@@ -440,6 +517,7 @@ module.exports = grammar({
         $.pointer_type,
         $.ref_type,
         $.raw_pointer_type,
+        $.approx_type,
         $.array_type,
         $.tuple_type,
         $.struct_type,
@@ -447,26 +525,26 @@ module.exports = grammar({
         $.enum_type,
         $.union_type,
         $.error_type,
+        $.generic_type,
         $.named_type,
-      ),
-
-    _declared_type: ($) =>
-      choice(
-        $.struct_type,
-        $.interface_type,
-        $.enum_type,
-        $.union_type,
-        $.error_type,
       ),
 
     move: () => "move",
 
     named_type: ($) => choice($.identifier, $.scoped_identifier),
+    generic_type: ($) =>
+      seq(
+        field("name", choice($.identifier, $.scoped_identifier)),
+        field("type_arguments", $.type_argument_list),
+      ),
+
+    type_argument_list: ($) => seq("<", commaSep1($.type), optional(","), ">"),
 
     optional_type: ($) => seq("?", $.type),
     pointer_type: ($) => seq("*", $.type),
     ref_type: ($) => seq("&", optional("mut"), $.type),
     raw_pointer_type: ($) => seq("^", $.type),
+    approx_type: ($) => seq("~", $.type),
     array_type: ($) =>
       seq("[", field("size", $.expression), "]", field("element", $.type)),
     tuple_type: ($) => seq("(", commaSep1($.type), optional(","), ")"),
