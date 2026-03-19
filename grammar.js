@@ -193,6 +193,7 @@ module.exports = grammar({
 
     statement: ($) =>
       choice(
+        $.block,
         $.labeled_statement,
         $.let_statement,
         $.const_statement,
@@ -344,6 +345,7 @@ module.exports = grammar({
         $.generic_call_expression,
         $.call_expression,
         $.parenthesized_expression,
+        $.bracket_composite_literal,
         $.array_literal,
         $.composite_literal,
         $.identifier,
@@ -358,6 +360,15 @@ module.exports = grammar({
 
     array_literal: ($) =>
       seq("[", optional(commaSep1($.expression)), optional(","), "]"),
+
+    bracket_composite_literal: ($) =>
+      seq(
+        field("type", $.array_type),
+        "{",
+        optional(commaSep1(choice($.named_field_initializer, $.expression))),
+        optional(","),
+        "}",
+      ),
 
     composite_literal: ($) =>
       seq(

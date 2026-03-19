@@ -16,6 +16,10 @@
         "named": true
       },
       {
+        "type": "bracket_composite_literal",
+        "named": true
+      },
+      {
         "type": "call_expression",
         "named": true
       },
@@ -91,6 +95,10 @@
     "subtypes": [
       {
         "type": "assignment_statement",
+        "named": true
+      },
+      {
+        "type": "block",
         "named": true
       },
       {
@@ -414,6 +422,36 @@
     "type": "boolean_literal",
     "named": true,
     "fields": {}
+  },
+  {
+    "type": "bracket_composite_literal",
+    "named": true,
+    "fields": {
+      "type": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "array_type",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "named_field_initializer",
+          "named": true
+        }
+      ]
+    }
   },
   {
     "type": "break_statement",

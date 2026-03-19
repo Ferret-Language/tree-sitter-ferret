@@ -23,7 +23,7 @@ fn Point::Calc(&self) i32 {
 
 fn run2() void {
     let mut p: Point = .{}
-    let p2 = .{}
+    let p2 = .Point{}
     p.Calc()
     p.Incr() // should only work if p is mutable
     let m = &mut p
