@@ -2380,7 +2380,7 @@
           },
           {
             "type": "STRING",
-            "value": "["
+            "value": "<"
           },
           {
             "type": "FIELD",
@@ -2425,7 +2425,7 @@
           },
           {
             "type": "STRING",
-            "value": "]"
+            "value": ">"
           },
           {
             "type": "FIELD",
@@ -3880,6 +3880,15 @@
     [
       "named_type",
       "generic_type"
+    ],
+    [
+      "generic_call_expression",
+      "binary_expression"
+    ],
+    [
+      "generic_call_expression",
+      "prefix_expression",
+      "binary_expression"
     ]
   ],
   "precedences": [],

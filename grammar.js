@@ -34,6 +34,8 @@ module.exports = grammar({
     [$.expression, $.generic_type],
     [$.array_literal, $.array_type],
     [$.named_type, $.generic_type],
+    [$.generic_call_expression, $.binary_expression],
+    [$.generic_call_expression, $.prefix_expression, $.binary_expression],
   ],
 
   rules: {
@@ -397,10 +399,10 @@ module.exports = grammar({
         PREC.postfix,
         seq(
           field("function", $.expression),
-          "[",
+          "<",
           field("type_arguments", commaSep1($.type)),
           optional(","),
-          "]",
+          ">",
           field("arguments", $.argument_list),
         ),
       ),
