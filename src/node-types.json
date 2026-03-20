@@ -1831,6 +1831,10 @@
         "required": true,
         "types": [
           {
+            "type": "generic_type",
+            "named": true
+          },
+          {
             "type": "identifier",
             "named": true
           },

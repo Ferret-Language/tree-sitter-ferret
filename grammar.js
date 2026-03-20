@@ -607,7 +607,10 @@ module.exports = grammar({
     scoped_identifier: ($) =>
       prec.left(
         seq(
-          field("scope", choice($.identifier, $.scoped_identifier)),
+          field(
+            "scope",
+            choice($.identifier, $.scoped_identifier, $.generic_type),
+          ),
           "::",
           field("name", $.identifier),
         ),
