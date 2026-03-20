@@ -34,6 +34,7 @@ module.exports = grammar({
     [$.expression, $.generic_type],
     [$.array_literal, $.array_type],
     [$.named_type, $.generic_type],
+    [$.type_parameter, $.named_type],
     [$.generic_call_expression, $.binary_expression],
     [$.generic_call_expression, $.prefix_expression, $.binary_expression],
   ],
@@ -123,7 +124,10 @@ module.exports = grammar({
         choice(
           field("name", $.identifier),
           seq(
-            field("owner", choice($.identifier, $.scoped_identifier)),
+            field(
+              "owner",
+              choice($.identifier, $.scoped_identifier, $.generic_type),
+            ),
             "::",
             field("name", $.identifier),
           ),
@@ -329,7 +333,11 @@ module.exports = grammar({
     assignment_statement: ($) => seq($.assignment_clause, optional(";")),
 
     assignment_clause: ($) =>
-      seq(field("left", $.expression), "=", field("right", $.expression)),
+      seq(
+        field("left", $.expression),
+        field("operator", choice("=", "+=", "-=", "*=", "/=", "%=")),
+        field("right", $.expression),
+      ),
 
     expression_statement: ($) => seq($.expression, optional(";")),
 
@@ -375,7 +383,7 @@ module.exports = grammar({
     composite_literal: ($) =>
       seq(
         ".",
-        optional(field("type", $.named_type)),
+        optional(field("type", choice($.generic_type, $.named_type))),
         "{",
         optional(commaSep1(choice($.named_field_initializer, $.expression))),
         optional(","),
