@@ -559,7 +559,8 @@ module.exports = grammar({
         field("type_arguments", $.type_argument_list),
       ),
 
-    type_argument_list: ($) => seq("<", commaSep1($.type), optional(","), ">"),
+    type_argument_list: ($) =>
+      seq("<", optional(commaSep1($.type)), optional(","), ">"),
 
     optional_type: ($) => seq("?", $.type),
     pointer_type: ($) => seq("*", $.type),
