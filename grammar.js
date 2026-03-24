@@ -123,7 +123,7 @@ module.exports = grammar({
         ),
         optional(field("type_parameters", $.type_parameter_list)),
         field("parameters", $.parameter_list),
-        optional(field("result", $.type)),
+        optional(seq("->", field("result", $.type))),
         choice(field("body", $.block), ";"),
       ),
 
@@ -131,10 +131,7 @@ module.exports = grammar({
       seq("<", commaSep1($.type_parameter), optional(","), ">"),
 
     type_parameter: ($) =>
-      seq(
-        field("name", $.identifier),
-        optional(seq(":", $.constraint_term)),
-      ),
+      seq(field("name", $.identifier), optional(seq(":", $.constraint_term))),
 
     constraint_term: ($) =>
       choice(
@@ -142,7 +139,7 @@ module.exports = grammar({
         $.union_type,
         $.generic_type,
         $.approx_type,
-        $.named_type
+        $.named_type,
       ),
 
     parameter_list: ($) =>
@@ -570,7 +567,7 @@ module.exports = grammar({
         seq(
           field("name", $.identifier),
           field("parameters", $.parameter_list),
-          optional(field("result", $.type)),
+          optional(seq("->", field("result", $.type))),
           optional(";"),
         ),
       ),

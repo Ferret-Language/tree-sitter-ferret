@@ -2,7 +2,7 @@
 
 type Conn struct {}
 
-fn run(mut c: *Conn) void {
+fn run(mut c: *Conn) -> void {
     let m = &mut *c
     let r = &*c
     //m
@@ -17,11 +17,11 @@ fn Point::Incr(&mut self) {
     self.Value++
 }
 
-fn Point::Calc(&self) i32 {
+fn Point::Calc(&self) -> i32 {
     return self.Value
 }
 
-fn run2() void {
+fn run2() -> void {
     let mut p: Point = .{}
     let p2 = .Point{}
     p.Calc()

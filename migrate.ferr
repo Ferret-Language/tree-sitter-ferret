@@ -2,7 +2,7 @@
 
 type Conn struct {}
 
-fn run(mut c: *Conn) void {
+fn run(mut c: *Conn) -> void {
     let m = &mut *c
     let r = &*c
     //m
@@ -18,7 +18,7 @@ type Circle<T> struct {
     Rad: T
 }
 
-fn Circle<T>::New(v: T) Self {
+fn Circle<T>::New(v: T) -> Self {
     return .{ .Rad = v }
 }
 
@@ -26,7 +26,7 @@ fn Circle<T>::Draw(&self) {
     print("I am circle")
 }
 
-fn Point<T>::New(v: T) Self {
+fn Point<T>::New(v: T) -> Self {
     return .{ .Value = v }
 }
 
@@ -38,7 +38,7 @@ fn Point<T>::Incr(&mut self, cx: T) {
     self.Value += cx
 }
 
-fn Point<T>::Calc(&self) T {
+fn Point<T>::Calc(&self) -> T {
     return self.Value
 }
 
@@ -63,11 +63,11 @@ fn drawShape(s: Shape) {
 
 type any interface{}
 
-fn add<T>(a: T, b: T) T {
+fn add<T>(a: T, b: T) -> T {
     return a + b
 }
 
-fn mul_unused<T>(a: T, b: T) T {
+fn mul_unused<T>(a: T, b: T) -> T {
     return a * b
 }
 
