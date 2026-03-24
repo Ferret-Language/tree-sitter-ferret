@@ -47,7 +47,6 @@ module.exports = grammar({
         $.import_declaration,
         seq(repeat(field("attribute", $.attribute)), $.let_declaration),
         seq(repeat(field("attribute", $.attribute)), $.const_declaration),
-        seq(repeat(field("attribute", $.attribute)), $.constraint_declaration),
         seq(repeat(field("attribute", $.attribute)), $.type_declaration),
         $.function_declaration,
       ),
@@ -71,16 +70,6 @@ module.exports = grammar({
         field("name", $.identifier),
         optional(seq(":", field("type", $.type))),
         optional(seq("=", field("value", $.expression))),
-        optional(";"),
-      ),
-
-    constraint_declaration: ($) =>
-      seq(
-        "constraint",
-        field("name", $.identifier),
-        optional(field("type_parameters", $.type_parameter_list)),
-        "=",
-        field("value", $.constraint_expression),
         optional(";"),
       ),
 
@@ -144,18 +133,7 @@ module.exports = grammar({
     type_parameter: ($) =>
       seq(
         field("name", $.identifier),
-        optional(seq(":", field("constraint", $.constraint_expression))),
-      ),
-
-    constraint_expression: ($) =>
-      choice(
-        $.constraint_term,
-        prec.left(
-          seq(
-            field("left", $.constraint_term),
-            repeat1(seq("&", field("right", $.constraint_term))),
-          ),
-        ),
+        optional(seq(":", $.constraint_term)),
       ),
 
     constraint_term: ($) =>
@@ -164,8 +142,7 @@ module.exports = grammar({
         $.union_type,
         $.generic_type,
         $.approx_type,
-        $.named_type,
-        seq("(", $.constraint_expression, ")"),
+        $.named_type
       ),
 
     parameter_list: ($) =>
