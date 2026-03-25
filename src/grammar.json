@@ -1942,6 +1942,10 @@
         },
         {
           "type": "SYMBOL",
+          "name": "spread_expression"
+        },
+        {
+          "type": "SYMBOL",
           "name": "cast_expression"
         },
         {
@@ -2535,6 +2539,27 @@
         ]
       }
     },
+    "spread_expression": {
+      "type": "PREC_LEFT",
+      "value": 10,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "FIELD",
+            "name": "value",
+            "content": {
+              "type": "SYMBOL",
+              "name": "expression"
+            }
+          },
+          {
+            "type": "STRING",
+            "value": "..."
+          }
+        ]
+      }
+    },
     "postfix_expression": {
       "type": "PREC_LEFT",
       "value": 10,
@@ -3097,6 +3122,10 @@
         },
         {
           "type": "SYMBOL",
+          "name": "variadic_type"
+        },
+        {
+          "type": "SYMBOL",
           "name": "array_type"
         },
         {
@@ -3308,6 +3337,19 @@
         {
           "type": "STRING",
           "value": "~"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "type"
+        }
+      ]
+    },
+    "variadic_type": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "..."
         },
         {
           "type": "SYMBOL",

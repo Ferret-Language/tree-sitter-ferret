@@ -88,6 +88,10 @@
         "named": true
       },
       {
+        "type": "spread_expression",
+        "named": true
+      },
+      {
         "type": "string_literal",
         "named": true
       }
@@ -229,6 +233,10 @@
       },
       {
         "type": "union_type",
+        "named": true
+      },
+      {
+        "type": "variadic_type",
         "named": true
       }
     ]
@@ -1883,6 +1891,22 @@
     }
   },
   {
+    "type": "spread_expression",
+    "named": true,
+    "fields": {
+      "value": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "expression",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
     "type": "struct_type",
     "named": true,
     "fields": {},
@@ -2144,6 +2168,21 @@
     }
   },
   {
+    "type": "variadic_type",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "type",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "while_statement",
     "named": true,
     "fields": {
@@ -2255,6 +2294,10 @@
   },
   {
     "type": "..",
+    "named": false
+  },
+  {
+    "type": "...",
     "named": false
   },
   {

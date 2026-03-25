@@ -329,6 +329,7 @@ module.exports = grammar({
         $.prefix_expression,
         $.postfix_expression,
         $.error_propagate_expression,
+        $.spread_expression,
         $.cast_expression,
         $.index_expression,
         $.selector_expression,
@@ -417,6 +418,9 @@ module.exports = grammar({
 
     error_propagate_expression: ($) =>
       prec.left(PREC.postfix, seq(field("value", $.expression), "!!")),
+
+    spread_expression: ($) =>
+      prec.left(PREC.postfix, seq(field("value", $.expression), "...")),
 
     postfix_expression: ($) =>
       prec.left(
@@ -530,6 +534,7 @@ module.exports = grammar({
         $.ref_type,
         $.raw_pointer_type,
         $.approx_type,
+        $.variadic_type,
         $.array_type,
         $.tuple_type,
         $.struct_type,
@@ -558,6 +563,7 @@ module.exports = grammar({
     ref_type: ($) => seq("&", optional("mut"), $.type),
     raw_pointer_type: ($) => seq("^", $.type),
     approx_type: ($) => seq("~", $.type),
+    variadic_type: ($) => seq("...", $.type),
     array_type: ($) =>
       seq("[", field("size", $.expression), "]", field("element", $.type)),
     tuple_type: ($) => seq("(", commaSep1($.type), optional(","), ")"),
