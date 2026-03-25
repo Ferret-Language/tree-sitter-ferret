@@ -1,0 +1,46 @@
+
+type Point struct {
+    X: i32 = 1
+    Y: i32 = 2
+}
+
+fn Point::New() -> Self {
+    return .{}
+}
+
+test "test add" {
+    
+}
+
+fn sayhi(comptime msg: str) {
+    if msg != "Fuad" {
+        panic "You are not fuad. Blocked to compile"
+    }
+    print(msg)
+}
+// Generic add
+// This adds any number of args
+//
+type U union{ i32, f32 }
+
+fn add<T: U>(a: T, b: T) -> T {
+    return a + b
+}
+
+fn main() {
+    print(add(1, 2))
+    print(add(1.2, 4.2))
+
+    for [_]i32{1,2,3} | v | {
+        print(v)
+    }
+    print("range loop")
+
+    let start = 2
+    let end = 10
+    let step = 2
+
+    for start..end:step | v | {
+        print(v)
+    }
+}
