@@ -26,7 +26,7 @@ This grammar targets the new Ferret syntax in this repo, not the older Ferret co
 
 ## File extension
 
-The grammar is configured for `.ferr` files.
+The grammar is configured for `.fer` files.
 
 ## Development
 

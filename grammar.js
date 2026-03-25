@@ -5,6 +5,7 @@ const PREC = {
   and: 4,
   equality: 5,
   comparison: 6,
+  range: 6,
   sum: 7,
   product: 8,
   prefix: 9,
@@ -319,6 +320,7 @@ module.exports = grammar({
       choice(
         $.match_expression,
         $.catch_expression,
+        $.range_expression,
         $.binary_expression,
         $.prefix_expression,
         $.postfix_expression,
@@ -454,6 +456,17 @@ module.exports = grammar({
               field("handler", $.block),
             ),
           ),
+        ),
+      ),
+
+    range_expression: ($) =>
+      prec.left(
+        PREC.range,
+        seq(
+          field("start", $.expression),
+          field("operator", choice("..", "..=")),
+          field("end", $.expression),
+          optional(seq(":", field("step", $.expression))),
         ),
       ),
 

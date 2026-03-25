@@ -8,7 +8,7 @@
       "scope": "source.ferret",
       "file-types": [
         "ferret",
-        "ferr"
+        "fer"
       ],
       "injection-regex": "^ferret$",
       "class-name": "TreeSitterFerret"
