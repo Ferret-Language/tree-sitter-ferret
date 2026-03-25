@@ -78,6 +78,26 @@
           ]
         },
         {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "REPEAT",
+              "content": {
+                "type": "FIELD",
+                "name": "attribute",
+                "content": {
+                  "type": "SYMBOL",
+                  "name": "attribute"
+                }
+              }
+            },
+            {
+              "type": "SYMBOL",
+              "name": "test_declaration"
+            }
+          ]
+        },
+        {
           "type": "SYMBOL",
           "name": "function_declaration"
         }
@@ -574,6 +594,31 @@
               "value": ";"
             }
           ]
+        }
+      ]
+    },
+    "test_declaration": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "test"
+        },
+        {
+          "type": "FIELD",
+          "name": "name",
+          "content": {
+            "type": "SYMBOL",
+            "name": "string_literal"
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "body",
+          "content": {
+            "type": "SYMBOL",
+            "name": "block"
+          }
         }
       ]
     },

@@ -1898,6 +1898,32 @@
     }
   },
   {
+    "type": "test_declaration",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "block",
+            "named": true
+          }
+        ]
+      },
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "string_literal",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
     "type": "top_level_item",
     "named": true,
     "fields": {
@@ -1930,6 +1956,10 @@
         },
         {
           "type": "let_declaration",
+          "named": true
+        },
+        {
+          "type": "test_declaration",
           "named": true
         },
         {
@@ -2443,6 +2473,10 @@
   },
   {
     "type": "take",
+    "named": false
+  },
+  {
+    "type": "test",
     "named": false
   },
   {

@@ -49,6 +49,7 @@ module.exports = grammar({
         seq(repeat(field("attribute", $.attribute)), $.let_declaration),
         seq(repeat(field("attribute", $.attribute)), $.const_declaration),
         seq(repeat(field("attribute", $.attribute)), $.type_declaration),
+        seq(repeat(field("attribute", $.attribute)), $.test_declaration),
         $.function_declaration,
       ),
 
@@ -127,6 +128,9 @@ module.exports = grammar({
         optional(seq("->", field("result", $.type))),
         choice(field("body", $.block), ";"),
       ),
+
+    test_declaration: ($) =>
+      seq("test", field("name", $.string_literal), field("body", $.block)),
 
     type_parameter_list: ($) =>
       seq("<", commaSep1($.type_parameter), optional(","), ">"),
