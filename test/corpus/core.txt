@@ -299,6 +299,113 @@ fn Check(value ?i32) -> i32 {
           value: (identifier))))))
 
 ==================
+String And Char
+==================
+
+fn main() -> void {
+  let mut greeting: str = "hello"
+  greeting = "hé🙂"
+
+  let chars = greeting as []char
+  let expected: [3]char = [3]char{'h', 'é', '🙂'}
+  let raw: [2]u8 = [2]u8{b'h', b'i'}
+
+  if len(&expected) == 3 && greeting[1] == 'é' && raw[0] == b'h' {
+    print("ok")
+    return
+  }
+
+  panic "bad"
+}
+
+---
+
+(source_file
+  (top_level_item
+    (function_declaration
+      name: (identifier)
+      parameters: (parameter_list)
+      result: (named_type
+        (identifier))
+      body: (block
+        (let_statement
+          (let_clause
+            name: (identifier)
+            type: (named_type
+              (identifier))
+            value: (string_literal)))
+        (assignment_statement
+          (assignment_clause
+            left: (identifier)
+            right: (string_literal)))
+        (let_statement
+          (let_clause
+            name: (identifier)
+            value: (cast_expression
+              value: (identifier)
+              type: (slice_type
+                element: (named_type
+                  (identifier))))))
+        (let_statement
+          (let_clause
+            name: (identifier)
+            type: (array_type
+              size: (number_literal)
+              element: (named_type
+                (identifier)))
+            value: (bracket_composite_literal
+              type: (array_type
+                size: (number_literal)
+                element: (named_type
+                  (identifier)))
+              (char_literal)
+              (char_literal)
+              (char_literal))))
+        (let_statement
+          (let_clause
+            name: (identifier)
+            type: (array_type
+              size: (number_literal)
+              element: (named_type
+                (identifier)))
+            value: (bracket_composite_literal
+              type: (array_type
+                size: (number_literal)
+                element: (named_type
+                  (identifier)))
+              (byte_literal)
+              (byte_literal))))
+        (if_statement
+          condition: (binary_expression
+            left: (binary_expression
+              left: (binary_expression
+                left: (call_expression
+                  function: (identifier)
+                  arguments: (argument_list
+                    (prefix_expression
+                      value: (identifier))))
+                right: (number_literal))
+              right: (binary_expression
+                left: (index_expression
+                  value: (identifier)
+                  index: (number_literal))
+                right: (char_literal)))
+            right: (binary_expression
+              left: (index_expression
+                value: (identifier)
+                index: (number_literal))
+              right: (byte_literal)))
+          consequence: (block
+            (expression_statement
+              (call_expression
+                function: (identifier)
+                arguments: (argument_list
+                  (string_literal))))
+            (return_statement)))
+        (panic_statement
+          value: (string_literal))))))
+
+==================
 Labels
 ==================
 

@@ -12,9 +12,9 @@ const PREC = {
   postfix: 10,
 };
 
-const HEX_NUMBER = /0[xX][0-9a-fA-F](?:[0-9a-fA-F]|_[0-9a-fA-F])*/;
-const OCT_NUMBER = /0[oO][0-7](?:[0-7]|_[0-7])*/;
-const BIN_NUMBER = /0[bB][01](?:[01]|_[01])*/;
+const HEX_NUMBER = /0[xX][0-9A-Za-z](?:[0-9A-Za-z]|_[0-9A-Za-z])*/;
+const OCT_NUMBER = /0[oO][0-9A-Za-z](?:[0-9A-Za-z]|_[0-9A-Za-z])*/;
+const BIN_NUMBER = /0[bB][0-9A-Za-z](?:[0-9A-Za-z]|_[0-9A-Za-z])*/;
 const DEC_NUMBER = /[0-9](?:[0-9]|_[0-9])*/;
 const FLOAT_NUMBER =
   /[0-9](?:[0-9]|_[0-9])*(?:\.[0-9](?:[0-9]|_[0-9])*)?(?:[eE][+-]?[0-9](?:[0-9]|_[0-9])*)?/;
@@ -33,7 +33,8 @@ module.exports = grammar({
   conflicts: ($) => [
     [$.expression, $.named_type],
     [$.expression, $.generic_type],
-    [$.array_literal, $.array_type],
+    [$.array_literal, $.slice_type],
+    [$.expression, $.array_length],
     [$.named_type, $.generic_type],
     [$.type_parameter, $.named_type],
     [$.generic_call_expression, $.binary_expression],
@@ -343,6 +344,8 @@ module.exports = grammar({
         $.scoped_identifier,
         $.number_literal,
         $.string_literal,
+        $.char_literal,
+        $.byte_literal,
         $.boolean_literal,
         $.none_literal,
       ),
@@ -535,6 +538,7 @@ module.exports = grammar({
         $.raw_pointer_type,
         $.approx_type,
         $.variadic_type,
+        $.slice_type,
         $.array_type,
         $.tuple_type,
         $.struct_type,
@@ -564,8 +568,11 @@ module.exports = grammar({
     raw_pointer_type: ($) => seq("^", $.type),
     approx_type: ($) => seq("~", $.type),
     variadic_type: ($) => seq("...", $.type),
+    slice_type: ($) => seq("[", "]", field("element", $.type)),
     array_type: ($) =>
-      seq("[", field("size", $.expression), "]", field("element", $.type)),
+      seq("[", field("size", $.array_length), "]", field("element", $.type)),
+    array_length: ($) =>
+      choice($.number_literal, $.identifier, $.scoped_identifier),
     tuple_type: ($) => seq("(", commaSep1($.type), optional(","), ")"),
     error_union_type: ($) =>
       prec.right(
@@ -621,6 +628,8 @@ module.exports = grammar({
         choice(HEX_NUMBER, OCT_NUMBER, BIN_NUMBER, IMAG_NUMBER, FLOAT_NUMBER),
       ),
     string_literal: ($) => token(/"(?:\\.|[^"\\\n])*"/),
+    char_literal: ($) => token(/'(?:\\.|[^'\\\n])+'/),
+    byte_literal: ($) => token(/b'(?:\\.|[^'\\\n])+'/),
 
     identifier: () => /[A-Za-z_][A-Za-z0-9_]*/,
     line_comment: () => token(/\/\/[^\n]*/),

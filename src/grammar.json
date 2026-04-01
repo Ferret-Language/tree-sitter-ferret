@@ -1998,6 +1998,14 @@
         },
         {
           "type": "SYMBOL",
+          "name": "char_literal"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "byte_literal"
+        },
+        {
+          "type": "SYMBOL",
           "name": "boolean_literal"
         },
         {
@@ -3126,6 +3134,10 @@
         },
         {
           "type": "SYMBOL",
+          "name": "slice_type"
+        },
+        {
+          "type": "SYMBOL",
           "name": "array_type"
         },
         {
@@ -3357,6 +3369,27 @@
         }
       ]
     },
+    "slice_type": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "["
+        },
+        {
+          "type": "STRING",
+          "value": "]"
+        },
+        {
+          "type": "FIELD",
+          "name": "element",
+          "content": {
+            "type": "SYMBOL",
+            "name": "type"
+          }
+        }
+      ]
+    },
     "array_type": {
       "type": "SEQ",
       "members": [
@@ -3369,7 +3402,7 @@
           "name": "size",
           "content": {
             "type": "SYMBOL",
-            "name": "expression"
+            "name": "array_length"
           }
         },
         {
@@ -3383,6 +3416,23 @@
             "type": "SYMBOL",
             "name": "type"
           }
+        }
+      ]
+    },
+    "array_length": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "number_literal"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "identifier"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "scoped_identifier"
         }
       ]
     },
@@ -3917,6 +3967,20 @@
         "value": "\"(?:\\\\.|[^\"\\\\\\n])*\""
       }
     },
+    "char_literal": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PATTERN",
+        "value": "'(?:\\\\.|[^'\\\\\\n])+'"
+      }
+    },
+    "byte_literal": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PATTERN",
+        "value": "b'(?:\\\\.|[^'\\\\\\n])+'"
+      }
+    },
     "identifier": {
       "type": "PATTERN",
       "value": "[A-Za-z_][A-Za-z0-9_]*"
@@ -3961,7 +4025,11 @@
     ],
     [
       "array_literal",
-      "array_type"
+      "slice_type"
+    ],
+    [
+      "expression",
+      "array_length"
     ],
     [
       "named_type",

@@ -20,6 +20,10 @@
         "named": true
       },
       {
+        "type": "byte_literal",
+        "named": true
+      },
+      {
         "type": "call_expression",
         "named": true
       },
@@ -29,6 +33,10 @@
       },
       {
         "type": "catch_expression",
+        "named": true
+      },
+      {
+        "type": "char_literal",
         "named": true
       },
       {
@@ -224,6 +232,10 @@
         "named": true
       },
       {
+        "type": "slice_type",
+        "named": true
+      },
+      {
         "type": "struct_type",
         "named": true
       },
@@ -272,6 +284,29 @@
     }
   },
   {
+    "type": "array_length",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "number_literal",
+          "named": true
+        },
+        {
+          "type": "scoped_identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "array_literal",
     "named": true,
     "fields": {},
@@ -305,7 +340,7 @@
         "required": true,
         "types": [
           {
-            "type": "expression",
+            "type": "array_length",
             "named": true
           }
         ]
@@ -1875,6 +1910,22 @@
     }
   },
   {
+    "type": "slice_type",
+    "named": true,
+    "fields": {
+      "element": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "type",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
     "type": "source_file",
     "named": true,
     "root": true,
@@ -2390,8 +2441,16 @@
     "named": false
   },
   {
+    "type": "byte_literal",
+    "named": true
+  },
+  {
     "type": "catch",
     "named": false
+  },
+  {
+    "type": "char_literal",
+    "named": true
   },
   {
     "type": "comptime",
