@@ -3939,15 +3939,15 @@
         "members": [
           {
             "type": "PATTERN",
-            "value": "0[xX][0-9a-fA-F](?:[0-9a-fA-F]|_[0-9a-fA-F])*"
+            "value": "0[xX][0-9A-Za-z](?:[0-9A-Za-z]|_[0-9A-Za-z])*"
           },
           {
             "type": "PATTERN",
-            "value": "0[oO][0-7](?:[0-7]|_[0-7])*"
+            "value": "0[oO][0-9A-Za-z](?:[0-9A-Za-z]|_[0-9A-Za-z])*"
           },
           {
             "type": "PATTERN",
-            "value": "0[bB][01](?:[01]|_[01])*"
+            "value": "0[bB][0-9A-Za-z](?:[0-9A-Za-z]|_[0-9A-Za-z])*"
           },
           {
             "type": "PATTERN",
