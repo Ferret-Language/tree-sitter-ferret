@@ -9,7 +9,7 @@ fn run(mut c: *Conn) -> void {
     r
 }
 
-/// Point data structure
+// Point data structure
 type Point<T> struct {
     Value: T
 }
@@ -71,8 +71,8 @@ fn mul_unused<T>(a: T, b: T) -> T {
     return a * b
 }
 
-/// program entry point
-/// all here
+// program entry point
+// all here
 fn main() {
     let mut a = 10
     let b : i32 = a
