@@ -346,6 +346,7 @@ module.exports = grammar({
         $.bracket_composite_literal,
         $.array_literal,
         $.composite_literal,
+        $.map_literal,
         $.identifier,
         $.scoped_identifier,
         $.number_literal,
@@ -399,6 +400,26 @@ module.exports = grammar({
 
     named_field_initializer: ($) =>
       seq(".", field("name", $.identifier), "=", field("value", $.expression)),
+
+    map_entry: ($) =>
+      seq(field("key", $.expression), "=>", field("value", $.expression)),
+
+    map_literal: ($) =>
+      choice(
+        seq(
+          field("type", $.map_type),
+          "{",
+          optional(commaSep1($.map_entry)),
+          optional(","),
+          "}",
+        ),
+        seq(
+          "{",
+          commaSep1($.map_entry),
+          optional(","),
+          "}",
+        ),
+      ),
 
     call_expression: ($) =>
       prec.left(
@@ -564,6 +585,7 @@ module.exports = grammar({
         $.variadic_type,
         $.slice_type,
         $.array_type,
+        $.map_type,
         $.tuple_type,
         $.struct_type,
         $.interface_type,
@@ -575,6 +597,7 @@ module.exports = grammar({
       ),
 
     move: () => "move",
+    is: () => "is",
 
     named_type: ($) => choice($.identifier, $.scoped_identifier),
     generic_type: ($) =>
@@ -610,6 +633,7 @@ module.exports = grammar({
       seq("[", field("size", $.array_length), "]", field("element", $.type)),
     array_length: ($) =>
       choice($.number_literal, $.identifier, $.scoped_identifier),
+    map_type: ($) => seq("map", "[", field("key", $.type), "]", field("value", $.type)),
     tuple_type: ($) => seq("(", commaSep1($.type), optional(","), ")"),
     error_union_type: ($) =>
       prec.right(

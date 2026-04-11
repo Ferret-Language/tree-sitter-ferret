@@ -64,6 +64,10 @@
         "named": true
       },
       {
+        "type": "map_literal",
+        "named": true
+      },
+      {
         "type": "match_expression",
         "named": true
       },
@@ -217,6 +221,10 @@
       },
       {
         "type": "interface_type",
+        "named": true
+      },
+      {
+        "type": "map_type",
         "named": true
       },
       {
@@ -1560,6 +1568,84 @@
     }
   },
   {
+    "type": "map_entry",
+    "named": true,
+    "fields": {
+      "key": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "expression",
+            "named": true
+          }
+        ]
+      },
+      "value": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "expression",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "map_literal",
+    "named": true,
+    "fields": {
+      "type": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "map_type",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "map_entry",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "map_type",
+    "named": true,
+    "fields": {
+      "key": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "type",
+            "named": true
+          }
+        ]
+      },
+      "value": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "type",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
     "type": "match_arm",
     "named": true,
     "fields": {
@@ -2648,6 +2734,10 @@
   },
   {
     "type": "lock",
+    "named": false
+  },
+  {
+    "type": "map",
     "named": false
   },
   {
