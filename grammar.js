@@ -44,6 +44,7 @@ module.exports = grammar({
     [$.type_parameter, $.named_type],
     [$.generic_call_expression, $.binary_expression],
     [$.generic_call_expression, $.prefix_expression, $.binary_expression],
+    [$.expression_statement, $.composite_item],
   ],
 
   rules: {
@@ -346,7 +347,8 @@ module.exports = grammar({
         $.bracket_composite_literal,
         $.array_literal,
         $.composite_literal,
-        $.map_literal,
+        $.typed_composite_literal,
+        $.inferred_composite_literal,
         $.identifier,
         $.scoped_identifier,
         $.number_literal,
@@ -404,21 +406,24 @@ module.exports = grammar({
     map_entry: ($) =>
       seq(field("key", $.expression), "=>", field("value", $.expression)),
 
-    map_literal: ($) =>
-      choice(
-        seq(
-          field("type", choice($.map_type, $.generic_type, $.named_type)),
-          "{",
-          optional(commaSep1($.map_entry)),
-          optional(","),
-          "}",
-        ),
-        seq(
-          "{",
-          commaSep1($.map_entry),
-          optional(","),
-          "}",
-        ),
+    composite_item: ($) =>
+      choice($.named_field_initializer, $.map_entry, $.expression),
+
+    typed_composite_literal: ($) =>
+      seq(
+        field("type", choice($.map_type, $.generic_type, $.named_type)),
+        "{",
+        optional(commaSep1($.composite_item)),
+        optional(","),
+        "}",
+      ),
+
+    inferred_composite_literal: ($) =>
+      seq(
+        "{",
+        commaSep1($.composite_item),
+        optional(","),
+        "}",
       ),
 
     call_expression: ($) =>
