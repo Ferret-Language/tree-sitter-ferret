@@ -35,6 +35,11 @@ module.exports = grammar({
     [$.expression, $.generic_type],
     [$.array_literal, $.slice_type],
     [$.expression, $.array_length],
+    [$.expression, $.lambda_parameter],
+    [$.expression, $.lambda_parameter, $.named_type],
+    [$.type, $.function_type_parameter],
+    [$.lambda_parameter, $.named_type],
+    [$.lambda_parameter, $.type],
     [$.named_type, $.generic_type],
     [$.type_parameter, $.named_type],
     [$.generic_call_expression, $.binary_expression],
@@ -325,6 +330,7 @@ module.exports = grammar({
       choice(
         $.match_expression,
         $.catch_expression,
+        $.lambda_expression,
         $.range_expression,
         $.binary_expression,
         $.prefix_expression,
@@ -351,6 +357,23 @@ module.exports = grammar({
       ),
 
     parenthesized_expression: ($) => seq("(", $.expression, ")"),
+
+    lambda_expression: ($) =>
+      seq(
+        field("parameters", $.lambda_parameter_list),
+        "=>",
+        field("body", choice($.block, $.expression)),
+      ),
+
+    lambda_parameter_list: ($) =>
+      seq("(", optional(commaSep1($.lambda_parameter)), optional(","), ")"),
+
+    lambda_parameter: ($) =>
+      seq(
+        optional("mut"),
+        field("name", $.identifier),
+        optional(seq(":", field("type", choice($.variadic_type, $.type)))),
+      ),
 
     array_literal: ($) =>
       seq("[", optional(commaSep1($.expression)), optional(","), "]"),
@@ -532,6 +555,7 @@ module.exports = grammar({
     type: ($) =>
       choice(
         $.error_union_type,
+        $.function_type,
         $.optional_type,
         $.pointer_type,
         $.ref_type,
@@ -558,6 +582,19 @@ module.exports = grammar({
         field("name", choice($.identifier, $.scoped_identifier)),
         field("type_arguments", $.type_argument_list),
       ),
+
+    function_type: ($) =>
+      seq(
+        "fn",
+        "(",
+        optional(commaSep1($.function_type_parameter)),
+        optional(","),
+        ")",
+        optional(seq("->", field("result", $.type))),
+      ),
+
+    function_type_parameter: ($) =>
+      seq(field("type", choice($.variadic_type, $.type))),
 
     type_argument_list: ($) =>
       seq("<", optional(commaSep1($.type)), optional(","), ">"),

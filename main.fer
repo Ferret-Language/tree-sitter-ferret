@@ -42,4 +42,7 @@ fn main() {
     print(a)
     print(b)
     print(n)
+    
+    let lambda = () => print("hi")
+    lambda()
 }
