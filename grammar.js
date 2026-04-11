@@ -549,6 +549,10 @@ module.exports = grammar({
         ),
         prec.left(
           PREC.comparison,
+          seq(field("left", $.expression), $.is, field("right", $.type)),
+        ),
+        prec.left(
+          PREC.comparison,
           seq(
             field("left", $.expression),
             choice("<", "<=", ">", ">="),

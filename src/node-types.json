@@ -491,9 +491,23 @@
           {
             "type": "expression",
             "named": true
+          },
+          {
+            "type": "type",
+            "named": true
           }
         ]
       }
+    },
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "is",
+          "named": true
+        }
+      ]
     }
   },
   {
