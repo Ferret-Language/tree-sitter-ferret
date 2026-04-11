@@ -1616,7 +1616,15 @@
         "required": false,
         "types": [
           {
+            "type": "generic_type",
+            "named": true
+          },
+          {
             "type": "map_type",
+            "named": true
+          },
+          {
+            "type": "named_type",
             "named": true
           }
         ]

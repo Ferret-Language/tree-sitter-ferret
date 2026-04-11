@@ -2501,8 +2501,21 @@
               "type": "FIELD",
               "name": "type",
               "content": {
-                "type": "SYMBOL",
-                "name": "map_type"
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "SYMBOL",
+                    "name": "map_type"
+                  },
+                  {
+                    "type": "SYMBOL",
+                    "name": "generic_type"
+                  },
+                  {
+                    "type": "SYMBOL",
+                    "name": "named_type"
+                  }
+                ]
               }
             },
             {

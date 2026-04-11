@@ -407,7 +407,7 @@ module.exports = grammar({
     map_literal: ($) =>
       choice(
         seq(
-          field("type", $.map_type),
+          field("type", choice($.map_type, $.generic_type, $.named_type)),
           "{",
           optional(commaSep1($.map_entry)),
           optional(","),
