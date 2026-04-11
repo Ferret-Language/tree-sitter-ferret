@@ -1643,6 +1643,16 @@
           }
         ]
       }
+    },
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "map",
+          "named": true
+        }
+      ]
     }
   },
   {
@@ -1722,6 +1732,10 @@
       "types": [
         {
           "type": "expression",
+          "named": true
+        },
+        {
+          "type": "is",
           "named": true
         }
       ]
@@ -2721,7 +2735,7 @@
   },
   {
     "type": "is",
-    "named": false
+    "named": true
   },
   {
     "type": "let",
@@ -2738,7 +2752,7 @@
   },
   {
     "type": "map",
-    "named": false
+    "named": true
   },
   {
     "type": "match",

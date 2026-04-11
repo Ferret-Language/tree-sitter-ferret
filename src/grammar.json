@@ -1440,8 +1440,8 @@
           "type": "SEQ",
           "members": [
             {
-              "type": "STRING",
-              "value": "is"
+              "type": "SYMBOL",
+              "name": "is"
             },
             {
               "type": "FIELD",
@@ -3495,6 +3495,10 @@
       "type": "STRING",
       "value": "is"
     },
+    "map": {
+      "type": "STRING",
+      "value": "map"
+    },
     "named_type": {
       "type": "CHOICE",
       "members": [
@@ -3866,8 +3870,8 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "STRING",
-          "value": "map"
+          "type": "SYMBOL",
+          "name": "map"
         },
         {
           "type": "STRING",

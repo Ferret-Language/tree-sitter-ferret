@@ -255,7 +255,7 @@ module.exports = grammar({
       ),
 
     match_pattern: ($) =>
-      choice("_", seq("is", field("type", $.type)), $.expression),
+      choice("_", seq($.is, field("type", $.type)), $.expression),
 
     while_statement: ($) =>
       seq("while", field("condition", $.expression), field("body", $.block)),
@@ -598,6 +598,7 @@ module.exports = grammar({
 
     move: () => "move",
     is: () => "is",
+    map: () => "map",
 
     named_type: ($) => choice($.identifier, $.scoped_identifier),
     generic_type: ($) =>
@@ -633,7 +634,7 @@ module.exports = grammar({
       seq("[", field("size", $.array_length), "]", field("element", $.type)),
     array_length: ($) =>
       choice($.number_literal, $.identifier, $.scoped_identifier),
-    map_type: ($) => seq("map", "[", field("key", $.type), "]", field("value", $.type)),
+    map_type: ($) => seq($.map, "[", field("key", $.type), "]", field("value", $.type)),
     tuple_type: ($) => seq("(", commaSep1($.type), optional(","), ")"),
     error_union_type: ($) =>
       prec.right(
